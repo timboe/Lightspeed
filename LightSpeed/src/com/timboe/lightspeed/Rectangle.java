@@ -31,8 +31,8 @@ public class Rectangle extends DopplerObject {
 
 	
 	void Walk() {
-		vx = (float) (speed * Math.cos(a) * U.velocity);
-		vy = (float) (speed * Math.sin(a) * U.velocity);
+		vx = (float) (speed * Math.cos(a) * U.velocity * U.time_dilation);
+		vy = (float) (speed * Math.sin(a) * U.velocity * U.time_dilation);
 		x += vx;
 		y += vy;
 		dist_to_tick += U.velocity + U.c_pixel;
@@ -43,29 +43,25 @@ public class Rectangle extends DopplerObject {
 		x += _plus_x;
 		y += _plus_y;
 		dist_to_tick += Math.abs(_plus_x) + Math.abs(_plus_y) + U.c_pixel;
-		//dist_to_tick += ;
-		//Constrain();
 	}
 	
 	void Tick(int _tick) {
-		//Walk();
 		if (dist_to_tick > U.granularity) {
-		
 			dist_to_tick = 0;
 			P.AddShell( new PhotonShell(x, y, vx, vy, shape_size, SuperLumi, GID) );
 		}
 	}
 	
 	void Constrain() {
-		if (x < 0) {
+		if (x < (0 - U.world_x_pixels/2) ) {
 			a = +Math.PI - a;
-		} else if (x + shape_size >= U.world_x_pixels) {
+		} else if (x + shape_size >= U.world_x_pixels/2) {
 			a = -Math.PI - a;
 		}
 		
-		if (y < 0) {
+		if (y < (0 - U.world_y_pixels/2) ) {
 			a = 2*Math.PI - a;
-		} else if (y + shape_size >= U.world_y_pixels) {
+		} else if (y + shape_size >= U.world_y_pixels/2) {
 			a = -2*Math.PI - a;
 		}
 	}
@@ -74,7 +70,7 @@ public class Rectangle extends DopplerObject {
 		CalculateColour();
 		float ss2 = shape_size/2f;
 		_g2.setColor(shape_color);
-		_g2.fillRoundRect((int)x, (int)y, shape_size, shape_size, (int)ss2, (int)ss2);
+		_g2.drawRoundRect((int)x, (int)y, shape_size, shape_size, (int)ss2, (int)ss2);
 		DoSuperLumiSpikes(_g2, ss2);
 	}
 	

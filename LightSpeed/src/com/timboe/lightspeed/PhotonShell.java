@@ -5,34 +5,35 @@ import java.awt.Graphics2D;
 public class PhotonShell extends DopplerObject implements Comparable<PhotonShell> {
 
 	private Utility U = Utility.GetUtility();
-//	private PhotonManager P;
-//	Color debug_color;
 	
-	
-	int pixel_size;
-
-	
-	int createTime;
-	
-	private float radius; //radius of shell
-	
-	boolean dead;	
-	
-	int GID;
-	
+	int pixel_size; //size of rectangle
+	int createTime; //used to calculate radius
+	float radius; //radius of shell
+	boolean dead; //to be cleaned up
+	private boolean seen;
+	int GID; //matches with a rectangle
 	
 	PhotonShell(float _x, float _y, float _vx, float _vy, int _shape_size, boolean _SuperLumi, int _GID) {
-		super(_x,_y,_vx,_vy);
+		super(_x, _y, _vx, _vy);
 		
 		pixel_size = _shape_size;
-		
 		SuperLumi = _SuperLumi;
-		
 		radius = 0f;
 		dead = false;
 		GID = _GID;
-		
 		createTime = U.shellTime;
+	}
+	
+	public void SetSeen() {
+		seen = true;
+	}
+	
+	public boolean GetSeen() {
+		return seen;
+	}
+	
+	public void Kill() {
+		dead = true;
 	}
 	
 	boolean GetDead() {
@@ -41,7 +42,7 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 	
 	float GetRadius(){
 		radius = ((U.shellTime - createTime) * U.c_pixel);
-		if (radius > 1160) dead = true;
+		if (radius > U.max_radius) Kill();
 		return radius;
 	}
 	

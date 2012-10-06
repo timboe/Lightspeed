@@ -46,7 +46,7 @@ public class PhotonManager {
 	}
 	
 	float Seperation(int _x, int _y, PhotonShell _p) {
-		return (float) Math.sqrt( ((_x - _p.x)*(_x - _p.x)) + ((_y - _p.y)*(_y - _p.y)) ) - _p.GetRadius();
+		return (float) Math.hypot((_x - _p.x), (_y - _p.y)) - _p.GetRadius();
 	}
 	
 	public void RenderFromLocation(Graphics2D _g2, int _x, int _y) {
@@ -55,10 +55,13 @@ public class PhotonManager {
 		synchronized (list_of_shells_sync) {
 			for (PhotonShell _p : list_of_shells_sync) {
 				float sep = Seperation(_x , _y, _p);
-				if (sep < U.granularity && sep > -U.granularity) {
+				if (sep < U.granularity/2 && sep > -U.granularity/2) {
 					toDraw.add( _p );
+					_p.SetSeen();
+				} else if (_p.GetSeen() == true) {
+					_p.Kill();
 				}
-			}
+			} 
 			
 //			TreeSet<PhotonShell> toDraw = new TreeSet<PhotonShell>();
 //			synchronized (list_of_shells_sync) {
@@ -88,11 +91,10 @@ public class PhotonManager {
 	
 	void RenderShells(Graphics2D _g2) {
 		synchronized (list_of_shells_sync) {
-			int I=0;
 			for (PhotonShell _p : list_of_shells_sync) {
-				++I;
-				if (I%4 == 0) {
-					_g2.setColor(Color.white);
+				if (_p.GID == 49) {
+					float c = _p.radius/U.max_radius;
+					_g2.setColor(new Color(c,c,c));
 					_g2.drawOval((int)(_p.x - _p.GetRadius()),(int) (_p.y - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
 				}
 			}

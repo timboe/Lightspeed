@@ -9,16 +9,16 @@ public class PlayerShip {
 	public float x;
 	public float y;
 	
-	public double vx;
-	public double vy;
+	public float vx;
+	public float vy;
 	
 	private double a;
 	
 	private int r = 4;
 	
 	public PlayerShip(int _x, int _y) {
-		x = _x;
-		y = _y;
+		x = _x + (U.world_x_pixels/2);
+		y = _y + (U.world_y_pixels/2);
 		a=Math.PI/2.;
 	}
 	
@@ -57,7 +57,6 @@ public class PlayerShip {
 		
 	}
 	
-	
 	void Walk() {
 		x += vx;
 		y += vy;
@@ -65,31 +64,41 @@ public class PlayerShip {
 	}
 	
 	void Constrain() {
-		if (x < 0) {
+		if (x < (0 - U.world_x_pixels/2) ) {
 			vx = Math.abs(vx);
-		} else if (x + (2*r) >= U.world_x_pixels) {
+			a = +Math.PI - a;
+		} else if (x + (2*r) >= U.world_x_pixels/2) {
 			vx = -(Math.abs(vx));
+			a = -Math.PI - a;
 		}
 		
-		if (y < 0) {
+		if (y < (0 - U.world_y_pixels/2) ) {
 			vy = Math.abs(vy);
-		} else if (y + (2*r) >= U.world_y_pixels) {
+			a = 2*Math.PI - a;
+		} else if (y + (2*r) >= U.world_y_pixels/2) {
 			vy = -(Math.abs(vy));
+			a = -2*Math.PI - a;
 		}
 		
-		if (vx > U.c_pixel) {
-			vx = U.c_pixel;
-		} else if (vx < -U.c_pixel) {
-			vx = -U.c_pixel;
+		float speed = (float) Math.hypot(vx, vy);
+		if (speed > U.c_pixel) {
+			vx /= speed/U.c_pixel;
+			vy /= speed/U.c_pixel;
 		}
-		
-		if (vy > U.c_pixel) {
-			vy = U.c_pixel;
-		} else if (vy < -U.c_pixel) {
-			vy = -U.c_pixel;
-		}
-		
 	}
+	
+	public float GetGamma(int dir) {
+		//float velocity = (float) Math.hypot(vx, vy);
+		float gamma;
+		if (dir > 0) {
+			gamma = (float) Math.abs(vx / ( 1. - ((vx*vx)/(U.c_pixel*U.c_pixel)) ));
+		} else {
+			gamma = (float) Math.abs(vy / ( 1. - ((vy*vy)/(U.c_pixel*U.c_pixel)) ));
+		}
+		if (gamma > U.gamma_range) gamma = U.gamma_range;
+		return 1 - (gamma * U.gamma_suppression);
+	}
+	
 	
 	public void Render(Graphics2D _g2) {
 		_g2.setColor(Color.white);

@@ -13,12 +13,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
-public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, MouseMotionListener, MouseListener, KeyListener {
+public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener, MouseListener, KeyListener {
 
 
 	/**
@@ -51,32 +49,18 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
 	private Graphics dbg;
 	
 
-	
 	Utility U = Utility.GetUtility();
 	PhotonManager P = PhotonManager.GetPhotonManager();
-	//Rectangle R1;
-	//Rectangle R2;
-	///Rectangle R3;
-	
-	//SpriteShip pew_pew_ship;
 
 	int last_X = -1;
 	int last_Y = -1;
 	Point CurMouse;
 	Point2D MouseTF;
 
-
 	boolean mouseClick = false;
 	boolean mouseDrag = false;
 	boolean sendMouseDragPing = false;
 	
-	//Display parameters
-	float ZOOM=0.7f;
-	float YSHEAR=0.5f;
-	float ROTATE = 0f;
-	float TRANSLATE_X = 0f;
-	float TRANSLATE_Y = 0f;
-	float TOP_ROTATE;
 
 	boolean N;
 	boolean E;
@@ -88,7 +72,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
 	
 	boolean c_up;
 	boolean c_dn;
-
 	
 	private Thread th;
 
@@ -98,46 +81,47 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
     private boolean aa = true;
     private boolean disable_aa = true;
     AffineTransform af_none = null;
-    AffineTransform af_backing = null;
     AffineTransform af = null;
-    AffineTransform af_translate_zoom = null;
-    AffineTransform af_shear_rotate = null;
     Font myFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
     
 
-
-    
     @Override
 	public void destroy() { }
-
-	public boolean GetAA() {
-    	return aa;
-    }
 
 	@Override
 	public void init() {
 		
 		setSize(U.world_x_pixels, U.world_y_pixels);
 
-		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addKeyListener(this);
-		
 
-		for (int n=0; n<50; ++n) {
-			Rectangle R = new Rectangle(U.R.nextFloat()*U.world_x_pixels,
-					U.R.nextFloat()*U.world_y_pixels,
+		for (int n=1; n<=50; ++n) {
+			int rx=0, ry=0;
+			while (rx < 200 && rx > -200) {
+				rx = (int) (U.R.nextFloat()*(U.world_x_pixels-10) - (U.world_x_pixels/2));
+			}
+			while (ry < 200 && ry > -200) {
+				ry = (int) (U.R.nextFloat()*(U.world_y_pixels-10) - (U.world_y_pixels/2));
+			}
+			Rectangle R = new Rectangle(rx,
+					ry,
 					7+U.R.nextInt(5)-2,
 					Color.magenta);
 			R.speed = (float) ((1./100.)*n);//(float) (U.R.nextFloat() * 0.5);
 			U.list_of_rectangles.add(R);
+				
+		}
+		
+		for (int i=0; i<5000; ++i) {
+			U.list_of_stars.add(new BackgroundStar(U.R.nextFloat()*U.world_x_pixels - (U.world_x_pixels/2),
+					U.R.nextFloat()*U.world_y_pixels - (U.world_y_pixels/2)));
 		}
 		
 		//U.list_of_rectangles.add(new Rectangle(300f, 400f, 7, Color.green));
 
-		//pew_pew_ship = new SpriteShip(200,400);
-		U.player = new PlayerShip(200,200);
+		U.player = new PlayerShip(0 - U.world_x_pixels/2, 0 - U.world_y_pixels/2);
 		
 	    aa_on.put(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_SPEED);
 
@@ -159,10 +143,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
 		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S') S = true;
 		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') W = true;
 
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			c_dn = true;
-		}
-		
+		if (e.getKeyCode() == KeyEvent.VK_DOWN)	c_dn = true;
 		if (e.getKeyCode() == KeyEvent.VK_UP) c_up = true;
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) speed_dn = true;
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) speed_up = true;
@@ -218,17 +199,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
 
 	}
 
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (e.getWheelRotation() < 0) {
-			ZOOM = ZOOM * 1.2f;
-		}
-		else {
-			ZOOM = ZOOM * 0.8f;
-		}
-		if (ZOOM > 10.) ZOOM = 10.f;
-		if (ZOOM < 0.1) ZOOM = 0.1f;
-	}
 
 	@Override
 	public void paint (Graphics g) {
@@ -242,38 +212,46 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
 			TIME_OF_LAST_SECOND = (float) (TIME + 1000.);
 		}
 
-		
-		
 		final Graphics2D g2 = (Graphics2D)g;
-
+		if (af_none == null) af_none = g2.getTransform();
+		g2.setTransform(af_none);
 
 		
 		g2.setColor (Color.black);
 		g2.fillRect (0, 0, U.world_x_pixels, U.world_y_pixels);
 		
-		if (U.debug == true) {
-			P.RenderShells(g2);
-		}
+		g2.setFont(myFont);
+		g2.setColor(Color.white);
+		g2.drawString(" FPS:"+_FRAMES_LAST_SECOND+" TPS:"+_TICKS_LAST_SEC,10,20);//+" DEATHS:"+P.DEATHS+" WINS:"+P.WINS, 10, 20);
+		g2.drawString(" Speed of Light:"+U.c_pixel, 10, 40);
+		g2.drawString(" Speed Multiplier of Asteroids:"+U.velocity, 10, 60);
+		g2.drawString(" Gamma X:"+U.player.GetGamma(+1)+" Y:"+U.player.GetGamma(-1), 10, 80);
+
+		float Gplus = U.player.GetGamma(+1);
+		float Gmins = U.player.GetGamma(-1);
+		
+		g2.translate(U.world_x_pixels/2, U.world_y_pixels/2);
+		g2.scale(Gplus, 1);
+		g2.scale(1, Gmins);
+		
+		U.time_dilation = Math.min(Gplus, Gmins);//1 - ((1 - Math.min(Gplus, Gmins)) * 8); (super mode)
+		
+		g2.setColor(Color.white);
+		g2.drawRect(0 - U.world_x_pixels/2, 0 - U.world_y_pixels/2, U.world_x_pixels, U.world_y_pixels);
+		
+		if (U.debug == true) P.RenderShells(g2);
 				
+		for (BackgroundStar _s : U.list_of_stars) _s.Render(g2);
 		
 		if (U.show_all_locations == true) {
-			for (Rectangle _r : U.list_of_rectangles) {
-				_r.RenderReal(g2);
+			for (Rectangle _r : U.list_of_rectangles) _r.RenderReal(g2);
 			}
-			//pew_pew_ship.RenderReal(g2);
-		}
 		
 		//Draw player
 		U.player.Render(g2);
 		
 		//draw what player sees
 		P.RenderFromLocation(g2,Math.round(U.player.x),Math.round(U.player.y));
-
-		g2.setFont(myFont);
-		g2.setColor(Color.white);
-		g2.drawString(" FPS:"+_FRAMES_LAST_SECOND+" TPS:"+_TICKS_LAST_SEC,10,20);//+" DEATHS:"+P.DEATHS+" WINS:"+P.WINS, 10, 20);
-		g2.drawString(" Speed of Light:"+U.c_pixel, 10, 40);
-		g2.drawString(" Speed Multiplier of Asteroids:"+U.velocity, 10, 60);
 		
 		if (GameOverCheck() == true) {
 			U.GameOn = false;
@@ -311,8 +289,8 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
 		else if (U.velocity <= 1) U.velocity = 1f;
 		
 		if (CurMouse != null && (mouseClick||mouseDrag)) {
-			U.player.x = (int) CurMouse.getX();
-			U.player.y = (int) CurMouse.getY();
+			U.player.x = (int) CurMouse.getX() - (U.world_x_pixels/2);
+			U.player.y = (int) CurMouse.getY() - (U.world_y_pixels/2);
 		}
 		
 		for (Rectangle _r : U.list_of_rectangles) {
@@ -332,7 +310,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseWheelListener, 
 //			float ss2 = R.shape_size/2f;
 //			float sep_x = (R.x + ss2) - U.player.x;
 //			float sep_y = (R.y + ss2) - U.player.y;
-//			double sep = Math.sqrt( (sep_x*sep_x) + (sep_y*sep_y) );
+//			double sep = Math.hypot(sep_x, sep_y);
 //			if (sep < (ss2 + 4.)) return true;
 //		}
 		return false;

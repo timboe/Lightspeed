@@ -18,6 +18,9 @@ public final class Utility {
 	final float player_max_v = 0.99f;
 	final float player_acceleration = 0.005f;
 	
+	public float max_radius = 1160f;
+	
+	
 	public float velocity = 1f;
 	
 	//public final float c_cell = 0.1f;
@@ -30,17 +33,26 @@ public final class Utility {
 	final int cells_x = world_x_pixels/tile_pixels;
 	final int cells_y = world_y_pixels/tile_pixels;
 	
+	public int twinkle_speed = 5;
+	public float twinkle_prob = 0.0001f;
 	
 	private static final Utility singleton = new Utility();
 	
-	public double doppler_range = 2f; //Gamma range -x to +x to map Blue to Red colour 
+	public float doppler_range = 1.0f; //Gamma range -x to +x to map Blue to Red colour 
 	
 	LinkedList<Rectangle> list_of_rectangles = new LinkedList<Rectangle>();
+	LinkedList<BackgroundStar> list_of_stars = new LinkedList<BackgroundStar>();
 
 	int superLumiSpikeSize = 10;
 	int superLumiSpikes=5;
 	
+	public float gamma_range = 1f; //small, not much distoprtion.  big, lots of distortion
+	public float gamma_suppression = 0.1f; //speed of distortion
+	
+	public float time_dilation = 1;
+	
 	public int shellTime = 0;
+	
 	
 	
 	boolean debug = false;
