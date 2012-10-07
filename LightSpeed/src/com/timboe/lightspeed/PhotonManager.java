@@ -86,6 +86,12 @@ public class PhotonManager {
 		
 	}
 	
+	public void Clear() {
+		synchronized (list_of_shells_sync) {
+				list_of_shells_sync.clear();
+		}
+	}
+	
 	void RenderShells(Graphics2D _g2) {
 		synchronized (list_of_shells_sync) {
 			for (PhotonShell _p : list_of_shells_sync) {

@@ -11,31 +11,30 @@ public class Rectangle extends DopplerObject {
 
 	float a;
 	float speed;
-	
-	float dist_to_tick;
-	
-	
+	float dist_to_tick;	
 	int GID;
 	
-	Rectangle(float _x, float _y, int _shape_size, Color _shape_color) {
+	Rectangle(float _x, float _y, int _shape_size, float _speed) {
 		super(_x, _y, 0, 0);
 		
 		shape_size = _shape_size;
 		shape_size2 = _shape_size/2;
-
-		shape_color = _shape_color;
-		
+		shape_color = U.default_colour;
 		a = (float) (U.R.nextFloat()*Math.PI);
-
-		speed = 0.99f;
-		
+		speed = _speed;
 		GID = ++U.GID;
 	}
 
 	
 	void Walk() {
-		vx = (float) (speed * Math.cos(a) * U.velocity * U.time_dilation);
-		vy = (float) (speed * Math.sin(a) * U.velocity * U.time_dilation);
+		float dial_X = U.time_dilation_X;
+		float dial_Y = U.time_dilation_Y;
+		if (Math.hypot(vx, vy) > U.c_pixel) {
+			dial_X = 1f;
+			dial_Y = 1f;
+		}
+		vx = (float) (speed * Math.cos(a) * U.velocity * dial_X);
+		vy = (float) (speed * Math.sin(a) * U.velocity * dial_Y);
 		x += vx;
 		y += vy;
 		dist_to_tick += U.velocity + U.c_pixel;
@@ -69,7 +68,12 @@ public class Rectangle extends DopplerObject {
 	}
 	
 	void RenderReal(Graphics2D _g2) {
-		CalculateColour();
+		if (U.option_Doppler == true) CalculateColour();
+		else shape_color = U.default_colour;
+		if (Math.hypot(vx, vy) > U.c_pixel) {
+			shape_color = Color.yellow;
+			SuperLumi = true;
+		}
 		_g2.setColor(shape_color);
 		_g2.drawRoundRect((int)x, (int)y, shape_size, shape_size, shape_size2, shape_size2);
 		DoSuperLumiSpikes(_g2, shape_size2);

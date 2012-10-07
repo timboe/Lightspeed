@@ -1,8 +1,6 @@
 package com.timboe.lightspeed;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 
 public class PlayerShip {
 	private Utility U = Utility.GetUtility();
@@ -17,26 +15,19 @@ public class PlayerShip {
 	
 	private int r = 4;
 	
-	private int scale = 1;
+	private ShipGraphic ship;
 	
 	boolean accelerating = false;
 	
-	Polygon ship = new Polygon();
-	Color ship_color;
+	int dmg;
+	
 	
 	public PlayerShip(int _x, int _y) {
 		x = _x + U.world_x_pixels2;
 		y = _y + U.world_y_pixels2;
 		a=(float) (Math.PI/2.);
 		
-		ship.addPoint(0*scale  ,0*scale );
-		ship.addPoint(10*scale ,0*scale );
-		ship.addPoint(-5*scale ,5*scale );
-		ship.addPoint(-2*scale ,0*scale );
-		ship.addPoint(-5*scale ,-5*scale);
-		ship.addPoint(10*scale ,0*scale );
-
-		ship_color = new Color(122,111,55);
+		ship = new ShipGraphic(1);
 	}
 	
 	public void changeDirection(int dir) {
@@ -45,6 +36,18 @@ public class PlayerShip {
 		} else {
 			a -= Math.PI * (3./360.);
 		}
+	}
+	
+	public void Damage() {
+		dmg = 20;
+	}
+	
+	private boolean IsDamaged() {
+		if (dmg > 0) {
+			--dmg;
+			return true;
+		}
+		return false;
 	}
 	
 	public void accelerate(int dir) {
@@ -98,51 +101,9 @@ public class PlayerShip {
 	
 	
 	public void Render(Graphics2D _g2) {
-
-//		int x2 = (int)Math.round(x + (3 * Math.cos(a+Math.PI)));
-//		int y2 = (int)Math.round(y + (3 * Math.sin(a+Math.PI)));
-//		_g2.setColor(Color.red);
-//		_g2.fillOval(x2 - 3, y2 - 3, 6, 6);	
-		
-
-
-//		p.addPoint((int)Math.round(x + (-4 * Math.cos(a))), (int)Math.round(y + (-6 * Math.sin(a))));
-//		p.addPoint((int)Math.round(x),                      (int)Math.round(y + ( 8 * Math.cos(a))));
-//		p.addPoint((int)Math.round(x + ( 4 * Math.cos(a))), (int)Math.round(y + (-6 * Math.sin(a))));
-//		p.addPoint((int)Math.round(x),                      (int)Math.round(y + (-4 * Math.cos(a))));
-		
-
-
-		//p.addPoint( (int)Math.round(x + (40 * Math.cos(a))), (int)Math.round(y - (20 * Math.sin(a))) );
-
 		//WARNING - altering renderer
-		//_g2.setTransform(U.af_none);
-		_g2.translate(x, y);
-		_g2.rotate(a);
-
-		if (accelerating == true) {
-			_g2.setColor(Color.orange);
-			_g2.fillOval(-5*scale, -2*scale, 4*scale, 4*scale);	
-			_g2.setColor(Color.red);
-			for (int S=0; S < U.superLumiSpikes; ++S) {
-				double randomAngle = (U.R.nextFloat() * Math.PI * 2);
-				int sx = (int) (-3*scale + (scale * 5 * Math.cos(randomAngle)));
-				int sy = (int) (0        + (scale * 5 * Math.sin(randomAngle)));
-				_g2.drawLine(-3*scale, 0, sx, sy);
-			}
-		}
+		ship.Render(_g2, Math.round(x), Math.round(y), a, accelerating, IsDamaged());
 		accelerating = false;
-		
-		_g2.setColor(Color.green);
-		_g2.fillPolygon(ship);
-		_g2.setColor(Color.gray);
-		_g2.fillOval(-2*scale, -2*scale, 4*scale, 4*scale);	
-		_g2.setColor(Color.white);
-		_g2.drawPolygon(ship);
-		
-
-
-
 	}
 
 }

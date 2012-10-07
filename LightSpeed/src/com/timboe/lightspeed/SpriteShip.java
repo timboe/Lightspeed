@@ -1,6 +1,5 @@
 package com.timboe.lightspeed;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.LinkedList;
 
@@ -55,42 +54,42 @@ public class SpriteShip {
 		y = _y;
 		r = (5*4);
 		//make the shape
-		int _s = 5;
-		int _r = 5;
-		myShapes.add( new Rectangle(_x - _r, _y - (3*_r), _s, new Color(112,146,190)) );//light blue
-		myShapes.add( new Rectangle(_x + _r, _y - (3*_r), _s, new Color(112,146,190)) );//light blue
-		
-		myShapes.add( new Rectangle(_x - _r, _y - (2*_r), _s, new Color(112,146,190)) );//light blue
-		myShapes.add( new Rectangle(_x + _r, _y - (2*_r), _s, new Color(112,146,190)) );//light blue
-		myShapes.add( new Rectangle(_x     , _y - (2*_r), _s, new Color(181,230,29 )) );//lime
-
-		myShapes.add( new Rectangle(_x - _r, _y - _r, _s, new Color(181,230,29 )) );//lime
-		myShapes.add( new Rectangle(_x + _r, _y - _r, _s, new Color(181,230,29 )) );//lime
-		myShapes.add( new Rectangle(_x     , _y - _r, _s, new Color(181,230,29 )) );//lime
-		
-		myShapes.add( new Rectangle(_x - (2*_r), _y, _r, new Color(163,73 ,164)) );//violet
-		myShapes.add( new Rectangle(_x - (1*_r), _y, _r, new Color(163,73 ,164)) );//violet
-		myShapes.add( new Rectangle(_x         , _y, _r, new Color(163,73 ,164)) );//violet
-		myShapes.add( new Rectangle(_x + (1*_r), _y, _r, new Color(163,73 ,164)) );//violet
-		myShapes.add( new Rectangle(_x + (2*_r), _y, _r, new Color(163,73 ,164)) );//violet
-		
-		myShapes.add( new Rectangle(_x - (2*_r), _y + _r, _s, new Color(163,73 ,164)) );//violet
-		myShapes.add( new Rectangle(_x - (1*_r), _y + _r, _s, new Color(63 ,72 ,204)) );//blue
-		myShapes.add( new Rectangle(_x         , _y + _r, _s, new Color(163,73 ,164)) );//violet
-		myShapes.add( new Rectangle(_x + (1*_r), _y + _r, _s, new Color(63 ,72 ,204)) );//blue
-		myShapes.add( new Rectangle(_x + (2*_r), _y + _r, _s, new Color(163,73 ,164)) );//violet
-		
-		myShapes.add( new Rectangle(_x - (3*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
-		myShapes.add( new Rectangle(_x - (2*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
-		myShapes.add( new Rectangle(_x - (1*_r), _y + (2*_r), _s, new Color(63 ,72 ,204)) );//blue
-		myShapes.add( new Rectangle(_x         , _y + (2*_r), _s, new Color(63 ,72 ,204)) );//blue
-		myShapes.add( new Rectangle(_x + (1*_r), _y + (2*_r), _s, new Color(63 ,72 ,204)) );//blue
-		myShapes.add( new Rectangle(_x + (2*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
-		myShapes.add( new Rectangle(_x + (3*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
-
-		myShapes.add( new Rectangle(_x - (3*_r), _y + (3*_r), _s, new Color(34 ,177,76 )) );//green
-		myShapes.add( new Rectangle(_x         , _y + (3*_r), _s, new Color(237,28 ,36 )) );//red
-		myShapes.add( new Rectangle(_x + (3*_r), _y + (3*_r), _s, new Color(34 ,177,76 )) );//green
+//		int _s = 5;
+//		int _r = 5;
+//		myShapes.add( new Rectangle(_x - _r, _y - (3*_r), _s, new Color(112,146,190)) );//light blue
+//		myShapes.add( new Rectangle(_x + _r, _y - (3*_r), _s, new Color(112,146,190)) );//light blue
+//		
+//		myShapes.add( new Rectangle(_x - _r, _y - (2*_r), _s, new Color(112,146,190)) );//light blue
+//		myShapes.add( new Rectangle(_x + _r, _y - (2*_r), _s, new Color(112,146,190)) );//light blue
+//		myShapes.add( new Rectangle(_x     , _y - (2*_r), _s, new Color(181,230,29 )) );//lime
+//
+//		myShapes.add( new Rectangle(_x - _r, _y - _r, _s, new Color(181,230,29 )) );//lime
+//		myShapes.add( new Rectangle(_x + _r, _y - _r, _s, new Color(181,230,29 )) );//lime
+//		myShapes.add( new Rectangle(_x     , _y - _r, _s, new Color(181,230,29 )) );//lime
+//		
+//		myShapes.add( new Rectangle(_x - (2*_r), _y, _r, new Color(163,73 ,164)) );//violet
+//		myShapes.add( new Rectangle(_x - (1*_r), _y, _r, new Color(163,73 ,164)) );//violet
+//		myShapes.add( new Rectangle(_x         , _y, _r, new Color(163,73 ,164)) );//violet
+//		myShapes.add( new Rectangle(_x + (1*_r), _y, _r, new Color(163,73 ,164)) );//violet
+//		myShapes.add( new Rectangle(_x + (2*_r), _y, _r, new Color(163,73 ,164)) );//violet
+//		
+//		myShapes.add( new Rectangle(_x - (2*_r), _y + _r, _s, new Color(163,73 ,164)) );//violet
+//		myShapes.add( new Rectangle(_x - (1*_r), _y + _r, _s, new Color(63 ,72 ,204)) );//blue
+//		myShapes.add( new Rectangle(_x         , _y + _r, _s, new Color(163,73 ,164)) );//violet
+//		myShapes.add( new Rectangle(_x + (1*_r), _y + _r, _s, new Color(63 ,72 ,204)) );//blue
+//		myShapes.add( new Rectangle(_x + (2*_r), _y + _r, _s, new Color(163,73 ,164)) );//violet
+//		
+//		myShapes.add( new Rectangle(_x - (3*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
+//		myShapes.add( new Rectangle(_x - (2*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
+//		myShapes.add( new Rectangle(_x - (1*_r), _y + (2*_r), _s, new Color(63 ,72 ,204)) );//blue
+//		myShapes.add( new Rectangle(_x         , _y + (2*_r), _s, new Color(63 ,72 ,204)) );//blue
+//		myShapes.add( new Rectangle(_x + (1*_r), _y + (2*_r), _s, new Color(63 ,72 ,204)) );//blue
+//		myShapes.add( new Rectangle(_x + (2*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
+//		myShapes.add( new Rectangle(_x + (3*_r), _y + (2*_r), _s, new Color(34 ,177,76 )) );//green
+//
+//		myShapes.add( new Rectangle(_x - (3*_r), _y + (3*_r), _s, new Color(34 ,177,76 )) );//green
+//		myShapes.add( new Rectangle(_x         , _y + (3*_r), _s, new Color(237,28 ,36 )) );//red
+//		myShapes.add( new Rectangle(_x + (3*_r), _y + (3*_r), _s, new Color(34 ,177,76 )) );//green
 		
 	}
 	

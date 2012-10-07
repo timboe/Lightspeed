@@ -28,30 +28,25 @@ public class DopplerObject {
 		//System.out.println("angle to player: "+ Math.toDegrees(angle));
 		
 		//calculate my velocity along this axis
-		double my_vx_axis = vx * Math.sin(angle) * U.time_dilation;
-		double my_vy_axis = vy * Math.cos(angle) * U.time_dilation;
+		double my_vx_axis = vx * Math.sin(angle);
+		double my_vy_axis = vy * Math.cos(angle);
 		double my_axis_velocity = Math.hypot(my_vx_axis, my_vy_axis);
 		
 		double pl_vx_axis = U.player.vx * Math.sin(angle);
 		double pl_vy_axis = U.player.vy * Math.cos(angle);
-		double pl_axis_velocity = Math.hypot(pl_vx_axis, pl_vy_axis);
+		double pl_axis_velocity = Math.hypot(pl_vx_axis, pl_vy_axis);	
 
-					
-		if (my_axis_velocity > U.c_pixel) {
-			shape_color = Color.yellow;
-			SuperLumi = true;
-		} else {
-			SuperLumi = false;
-			double doppler = (my_axis_velocity-pl_axis_velocity) / ( 1 - ((my_axis_velocity*pl_axis_velocity)/(U.c_pixel*U.c_pixel)) );
+		SuperLumi = false;
+		double doppler = (my_axis_velocity-pl_axis_velocity) / ( 1 - ((my_axis_velocity*pl_axis_velocity)/(U.c_pixel*U.c_pixel)) );
 
-			if ((my_vx_axis+my_vy_axis)+(pl_vx_axis+pl_vy_axis) < 0) doppler *= -1;
+		if ((my_vx_axis+my_vy_axis)+(pl_vx_axis+pl_vy_axis) < 0) doppler *= -1;
 
-			if (doppler > U.doppler_range) doppler = U.doppler_range;
-			else if (doppler < -U.doppler_range) doppler = -U.doppler_range;
+		if (doppler > U.doppler_range) doppler = U.doppler_range;
+		else if (doppler < -U.doppler_range) doppler = -U.doppler_range;
 
-			//System.out.println("speed to player: "+ pl_axis_velocity + " angle " + Math.toDegrees(angle) + " DOPPLER " + doppler);
-			SetDopplerColourMap(doppler);
-		}
+		//System.out.println("speed to player: "+ pl_axis_velocity + " angle " + Math.toDegrees(angle) + " DOPPLER " + doppler);
+		SetDopplerColourMap(doppler);
+
 	}
 	
 	void SetDopplerColourMap(double doppler) {
