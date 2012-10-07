@@ -8,10 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class PhotonManager {
-	
-	int DEATHS=0;
-	int WINS=0;
-	
+
 	private Utility U = Utility.GetUtility();
 	
 	private final LinkedList<PhotonShell> list_of_shells = new LinkedList<PhotonShell>();
@@ -93,7 +90,7 @@ public class PhotonManager {
 		synchronized (list_of_shells_sync) {
 			for (PhotonShell _p : list_of_shells_sync) {
 				if (_p.GID == 49) {
-					float c = _p.radius/U.max_radius;
+					float c = 1-(_p.radius/U.max_radius);
 					_g2.setColor(new Color(c,c,c));
 					_g2.drawOval((int)(_p.x - _p.GetRadius()),(int) (_p.y - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
 				}

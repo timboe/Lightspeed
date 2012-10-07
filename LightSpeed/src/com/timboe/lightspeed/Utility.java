@@ -1,5 +1,8 @@
 package com.timboe.lightspeed;
 
+import java.awt.geom.AffineTransform;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -8,10 +11,15 @@ public final class Utility {
 
 	public final Random R = new Random();
 	
+    AffineTransform af_none = null;
+
+	
 	//world parameters
 	final int world_x_pixels = 1000;
 	final int world_y_pixels = 600;
-	final int tile_pixels = 10;
+
+	final int world_x_pixels2 = world_x_pixels/2;
+	final int world_y_pixels2 = world_y_pixels/2;
 	
 	//player temp params
 	PlayerShip player;
@@ -26,15 +34,13 @@ public final class Utility {
 	//public final float c_cell = 0.1f;
 	public float c_pixel = 1f;
 	
-	final public int granularity = 12;
+	final public int granularity = 20;
 	
 	public int GID = 0;
 	
-	final int cells_x = world_x_pixels/tile_pixels;
-	final int cells_y = world_y_pixels/tile_pixels;
-	
 	public int twinkle_speed = 5;
 	public float twinkle_prob = 0.0001f;
+	public int twinkle_stars = 50;
 	
 	private static final Utility singleton = new Utility();
 	
@@ -42,6 +48,10 @@ public final class Utility {
 	
 	LinkedList<Rectangle> list_of_rectangles = new LinkedList<Rectangle>();
 	LinkedList<BackgroundStar> list_of_stars = new LinkedList<BackgroundStar>();
+	LinkedList<Debris> list_of_debris = new LinkedList<Debris>();
+	Collection<Debris> list_of_debris_sync = Collections.synchronizedCollection(list_of_debris);
+	
+	int NDebris = 10;
 
 	int superLumiSpikeSize = 10;
 	int superLumiSpikes=5;
@@ -53,7 +63,7 @@ public final class Utility {
 	
 	public int shellTime = 0;
 	
-	
+	public int UI = 50;
 	
 	boolean debug = false;
 	boolean show_all_locations = false;

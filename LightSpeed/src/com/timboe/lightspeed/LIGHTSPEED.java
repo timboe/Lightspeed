@@ -15,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.LinkedList;
 
 public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener, MouseListener, KeyListener {
 
@@ -61,17 +62,13 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	boolean mouseDrag = false;
 	boolean sendMouseDragPing = false;
 	
-
-	boolean N;
-	boolean E;
-	boolean S;
-	boolean W;
-	
 	boolean speed_up;
 	boolean speed_dn;
 	
 	boolean c_up;
 	boolean c_dn;
+	
+	boolean N=false,E=false,S=false,W=false;
 	
 	private Thread th;
 
@@ -80,8 +77,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
     RenderingHints aa_off = new RenderingHints(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF);
     private boolean aa = true;
     private boolean disable_aa = true;
-    AffineTransform af_none = null;
-    AffineTransform af = null;
     Font myFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
     
 
@@ -100,10 +95,10 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		for (int n=1; n<=50; ++n) {
 			int rx=0, ry=0;
 			while (rx < 200 && rx > -200) {
-				rx = (int) (U.R.nextFloat()*(U.world_x_pixels-10) - (U.world_x_pixels/2));
+				rx = (int) (U.R.nextFloat()*(U.world_x_pixels - 10) - U.world_x_pixels2);
 			}
-			while (ry < 200 && ry > -200) {
-				ry = (int) (U.R.nextFloat()*(U.world_y_pixels-10) - (U.world_y_pixels/2));
+			while (ry < 200 && ry > -200 ) {
+				ry = (int) (U.R.nextFloat()*(U.world_y_pixels - 10 - U.UI) - U.world_y_pixels2 + U.UI);
 			}
 			Rectangle R = new Rectangle(rx,
 					ry,
@@ -114,14 +109,14 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 				
 		}
 		
-		for (int i=0; i<5000; ++i) {
-			U.list_of_stars.add(new BackgroundStar(U.R.nextFloat()*U.world_x_pixels - (U.world_x_pixels/2),
-					U.R.nextFloat()*U.world_y_pixels - (U.world_y_pixels/2)));
+		for (int i=0; i<U.twinkle_stars; ++i) {
+			U.list_of_stars.add(new BackgroundStar(U.R.nextFloat()*U.world_x_pixels - U.world_x_pixels2,
+					U.R.nextFloat()*(U.world_y_pixels-U.UI) - U.world_y_pixels2 + U.UI));
 		}
 		
 		//U.list_of_rectangles.add(new Rectangle(300f, 400f, 7, Color.green));
 
-		U.player = new PlayerShip(0 - U.world_x_pixels/2, 0 - U.world_y_pixels/2);
+		U.player = new PlayerShip(0 - U.world_x_pixels2, 0 - U.world_y_pixels2);
 		
 	    aa_on.put(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_SPEED);
 
@@ -213,8 +208,8 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		}
 
 		final Graphics2D g2 = (Graphics2D)g;
-		if (af_none == null) af_none = g2.getTransform();
-		g2.setTransform(af_none);
+		if (U.af_none == null) U.af_none = g2.getTransform();
+		g2.setTransform(U.af_none);
 
 		
 		g2.setColor (Color.black);
@@ -230,14 +225,14 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		float Gplus = U.player.GetGamma(+1);
 		float Gmins = U.player.GetGamma(-1);
 		
-		g2.translate(U.world_x_pixels/2, U.world_y_pixels/2);
+		g2.translate(U.world_x_pixels2, U.world_y_pixels2);
 		g2.scale(Gplus, 1);
 		g2.scale(1, Gmins);
 		
 		U.time_dilation = Math.min(Gplus, Gmins);//1 - ((1 - Math.min(Gplus, Gmins)) * 8); (super mode)
 		
 		g2.setColor(Color.white);
-		g2.drawRect(0 - U.world_x_pixels/2, 0 - U.world_y_pixels/2, U.world_x_pixels, U.world_y_pixels);
+		g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI, U.world_x_pixels, U.world_y_pixels - U.UI);
 		
 		if (U.debug == true) P.RenderShells(g2);
 				
@@ -245,13 +240,18 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		
 		if (U.show_all_locations == true) {
 			for (Rectangle _r : U.list_of_rectangles) _r.RenderReal(g2);
+			synchronized (U.list_of_debris_sync) {
+				for (Debris _d : U.list_of_debris_sync) _d.RenderReal(g2);
 			}
-		
-		//Draw player
-		U.player.Render(g2);
+		}
 		
 		//draw what player sees
 		P.RenderFromLocation(g2,Math.round(U.player.x),Math.round(U.player.y));
+		
+		
+		//Do this LAST as it alters the renderer
+		//Draw player
+		U.player.Render(g2);
 		
 		if (GameOverCheck() == true) {
 			U.GameOn = false;
@@ -262,21 +262,14 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 
 	void Tick() {
 		++U.shellTime;
-		
-//		if (N == true) U.player.accelerate_V(DirectionEnum.N);
-//		if (E == true) U.player.accelerate_H(DirectionEnum.E);
-//		if (S == true) U.player.accelerate_V(DirectionEnum.S);
-//		if (W == true) U.player.accelerate_H(DirectionEnum.W);
-		
+
 		if (N == true) U.player.accelerate(+1);
 		if (E == true) U.player.changeDirection(+1);
 		if (S == true) U.player.accelerate(-1);
 		if (W == true) U.player.changeDirection(-1);
 
 		
-		if (c_dn == true) {
-			U.c_pixel -= 0.01;
-		}
+		if (c_dn == true) U.c_pixel -= 0.01;
 		if (c_up == true) U.c_pixel += 0.01;
 
 		if (speed_dn == true) U.velocity -= 0.01;
@@ -289,30 +282,62 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		else if (U.velocity <= 1) U.velocity = 1f;
 		
 		if (CurMouse != null && (mouseClick||mouseDrag)) {
-			U.player.x = (int) CurMouse.getX() - (U.world_x_pixels/2);
-			U.player.y = (int) CurMouse.getY() - (U.world_y_pixels/2);
+			U.player.x = (int) CurMouse.getX() - (U.world_x_pixels2);
+			U.player.y = (int) CurMouse.getY() - (U.world_y_pixels2);
+			U.player.vx = 0;
+			U.player.vy = 0;
 		}
 		
 		for (Rectangle _r : U.list_of_rectangles) {
 			_r.Walk();
 			_r.Tick(_TICK);
 		}
+		synchronized (U.list_of_debris_sync) {
+			for (Debris _d : U.list_of_debris_sync) {
+				_d.Walk();
+				_d.Tick(_TICK);
+			}
+		}
 		//pew_pew_ship.Tick(_TICK);
 		U.player.Walk();
 		
-		if (U.shellTime % 1 == 0) P.Cleanup(); //photon manager
+		P.Cleanup(); //photon manager
+		DebrisCleanup();
 		
+	}
+	
+	public void DebrisCleanup() {
+		LinkedList<Debris> ToRemove = new LinkedList<Debris>();
+		synchronized (U.list_of_debris_sync) {
+			for (Debris _d : U.list_of_debris_sync) {
+				if (_d.GetDead() == true) ToRemove.add(_d);
+			}
+		}
+		synchronized (U.list_of_debris_sync) {
+			U.list_of_debris_sync.removeAll(ToRemove);
+		}
 	}
 	
 	public boolean GameOverCheck() {
 		//cheat!
-//		for (Rectangle R : U.list_of_rectangles) {
-//			float ss2 = R.shape_size/2f;
-//			float sep_x = (R.x + ss2) - U.player.x;
-//			float sep_y = (R.y + ss2) - U.player.y;
-//			double sep = Math.hypot(sep_x, sep_y);
-//			if (sep < (ss2 + 4.)) return true;
-//		}
+		LinkedList<Rectangle> ToRemove = new LinkedList<Rectangle>();
+		for (Rectangle R : U.list_of_rectangles) {
+			float sep_x = (R.x + R.shape_size2) - U.player.x;
+			float sep_y = (R.y + R.shape_size2) - U.player.y;
+			double sep = Math.hypot(sep_x, sep_y);
+			if (sep < (R.shape_size2 + 4.)) {
+				for (int i=0; i < U.NDebris; ++i) {
+					synchronized (U.list_of_debris_sync) {
+						U.list_of_debris_sync.add(new Debris(R));
+					}
+				}
+				ToRemove.add(R);
+			}
+		}
+		if (ToRemove.size() > 0){
+			U.list_of_rectangles.removeAll(ToRemove);
+			//return true;
+		}
 		return false;
 	}
 
