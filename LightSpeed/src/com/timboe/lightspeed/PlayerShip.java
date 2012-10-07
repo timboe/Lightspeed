@@ -11,7 +11,7 @@ public class PlayerShip {
 	public float vx;
 	public float vy;
 	
-	private float a;
+	float a;
 	
 	private int r = 4;
 	

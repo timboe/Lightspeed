@@ -23,7 +23,7 @@ public class DisplayButton {
 	private boolean Clickable = false;
 	
 	boolean isYesNo = false;
-	boolean yesNoValue;
+	private boolean yesNoValue;
 	
 	public DisplayButton(int _x, int _y, int _w, int _h, String _d, String _d2, boolean _c) {
 		x = _x;
@@ -35,6 +35,10 @@ public class DisplayButton {
 		display = _d;
 		display2 = _d2;
 		Clickable = _c;
+	}
+	
+	public void SetYesNoValue(boolean _yn) {
+		yesNoValue = _yn;
 	}
 
 	public void SetValue(float _var) {
@@ -54,16 +58,17 @@ public class DisplayButton {
 	public boolean GetHover() {
 		if (Clickable == false) return false;
 		if (U.CurMouse == null) return false;
-		if (U.CurMouse.x < x) return false;
-		if (U.CurMouse.x > x+w) return false;
-		if (U.CurMouse.y < y) return false;
-		if (U.CurMouse.y > y+h) return false;
+		if (U.CurMouse.x <= x) return false;
+		if (U.CurMouse.x >= x+w) return false;
+		if (U.CurMouse.y <= y) return false;
+		if (U.CurMouse.y >= y+h) return false;
 		return true;
 	}
 	
 	public void Render(Graphics2D _g2) {
 		boolean hov = GetHover();
 		if (hov == true) _g2.setColor(Color.white);
+		else if (Clickable == true) _g2.setColor(Color.gray);
 		else _g2.setColor(Color.black);
 		_g2.fillRect(x, y, w, h);
 		if (hov == true) _g2.setColor(Color.black);

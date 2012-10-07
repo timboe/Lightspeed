@@ -48,7 +48,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	ButtonManager B = ButtonManager.GetButtonManager();
 
 	boolean mouseClick = false, mouseDrag = false;
-	boolean speed_up, speed_dn, c_up, c_dn;
 	boolean N=false,E=false,S=false,W=false;
 	
 	private Thread th;
@@ -81,13 +80,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	}
 	
 	public void NewGame() {
-		synchronized (U.list_of_rectangles_sync) {
-			U.list_of_rectangles_sync.clear();
-		}
-		synchronized (U.list_of_debris_sync) {
-			U.list_of_debris_sync.clear();
-		}
-		P.Clear();
+		Clear();
 		
 		for (int n=1; n<=50; ++n) {
 			int rx=0, ry=0;
@@ -102,7 +95,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 					7+U.R.nextInt(5)-2, //size
 					(float) ((1./100.)*n));//speed //(float) (U.R.nextFloat() * 0.5);
 			synchronized (U.list_of_rectangles_sync) {
-				U.list_of_rectangles.add(R);
+				U.list_of_rectangles_sync.add(R);
 			}
 		}
 		
@@ -114,16 +107,31 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		U.velocity = 1f;
 		B.PlayingScore.SetValue(0);
 		U.show_all_locations = false;
+		U.show_light_cones = false;
 	}
-
 	
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		mouseClick=false;
-		mouseDrag=false;
-		B.ProcessMouseClick();
+	public void NewCreative() {
+		Clear();
+			
+		U.player = new PlayerShip(0 - U.world_x_pixels2, 0 - U.world_y_pixels2);
+		
+		U.c_pixel = 0.8f;
+		U.velocity = 0.5f;
+		U.show_all_locations = false;
+		U.show_light_cones = false;
 	}
+
+	public void Clear() {
+		synchronized (U.list_of_rectangles_sync) {
+			U.list_of_rectangles_sync.clear();
+		}
+		synchronized (U.list_of_debris_sync) {
+			U.list_of_debris_sync.clear();
+		}
+		P.Clear();
+	}
+
+
 
 	@Override
 	public void paint (Graphics g) {
@@ -144,6 +152,12 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		g2.setColor (Color.black);
 		g2.fillRect (0, 0, U.world_x_pixels, U.world_y_pixels);
 		
+		if (U.currentMode == GameMode.Title) {
+			g2.translate(U.world_x_pixels2, U.world_y_pixels2);
+			for (BackgroundStar _s : U.list_of_stars) _s.Render(g2);
+			g2.setTransform(U.af_none);
+		}
+		
 		g2.setFont(myFont);
 		g2.setColor(Color.white);
 		B.Render(g2); //Do buttons		
@@ -152,6 +166,8 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 			paint_Game(g2);
 		} else if (U.currentMode == GameMode.Title) {
 			paint_Title(g2);
+		} else if (U.currentMode == GameMode.Creative) {
+			paint_Creative(g2);
 		}
 
 
@@ -174,11 +190,51 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		
 		g2.setColor(Color.white);
 		g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI, U.world_x_pixels, U.world_y_pixels - U.UI);
-		
-		if (U.debug == true) P.RenderShells(g2);
-				
+						
 		for (BackgroundStar _s : U.list_of_stars) _s.Render(g2);
 		
+		//draw what player sees
+		P.RenderFromLocation(g2,Math.round(U.player.x),Math.round(U.player.y));
+		
+		if (U.show_all_locations == true) {
+			synchronized (U.list_of_rectangles_sync) {
+				for (Rectangle _r : U.list_of_rectangles) _r.RenderReal(g2);
+			}
+			synchronized (U.list_of_debris_sync) {
+				for (Debris _d : U.list_of_debris_sync) _d.RenderReal(g2);
+			}
+		}
+
+		U.player.Render(g2); 
+		
+		if (CollisionCheck() == true) { //true for no lives left
+			U.currentMode = GameMode.GameOver;
+			U.show_all_locations = true;
+		}
+	}
+	
+	public void paint_Creative(Graphics2D g2) {
+		float GammaX = U.player.GetGamma(+1);
+		float GammaY = U.player.GetGamma(-1);
+		
+		g2.translate(U.world_x_pixels2, U.world_y_pixels2);
+		if (U.option_Length == true) g2.scale(GammaX, GammaY);
+		
+		if (U.option_Time == true) {
+			U.time_dilation_X = 1 - ((1 - GammaX) * 8);// (super mode)
+			U.time_dilation_Y = 1 - ((1 - GammaY) * 8);// (super mode)
+		} else {
+			U.time_dilation_X = 1;
+			U.time_dilation_Y = 1;
+		}
+		
+		g2.setColor(Color.white);
+		g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI, U.world_x_pixels, U.world_y_pixels - U.UI);
+		
+		for (BackgroundStar _s : U.list_of_stars) _s.Render(g2);
+		
+		if (U.show_light_cones == true) P.RenderShells(g2);
+				
 		if (U.show_all_locations == true) {
 			synchronized (U.list_of_rectangles_sync) {
 				for (Rectangle _r : U.list_of_rectangles) _r.RenderReal(g2);
@@ -191,23 +247,12 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		//draw what player sees
 		P.RenderFromLocation(g2,Math.round(U.player.x),Math.round(U.player.y));
 		
-		//Do this LAST as it alters the renderer
-		//Draw player
 		U.player.Render(g2);
 		
-		if (CollisionCheck() == true) { //true for no lives left
-			U.currentMode = GameMode.GameOver;
-			U.show_all_locations = true;
-		}
+		CollisionCheck();
 	}
 	
-	public void paint_Title(Graphics2D g2) {
-		
-		g2.translate(U.world_x_pixels2, U.world_y_pixels2);
-		for (BackgroundStar _s : U.list_of_stars) _s.Render(g2);
-		
-		g2.setTransform(U.af_none);
-		
+	public void paint_Title(Graphics2D g2) {		
 		if (U.titleCascade <= 256) {
 			for (int x=1; x<=U.titleCascade; x+=5) {
 				if (x > 256) break;
@@ -249,15 +294,8 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 
 
 	}
-
-	void Tick() {
-		
-		if (U.currentMode == GameMode.GameOn || U.currentMode == GameMode.GameOver) {
-			Tick_Game();
-		}		
-	}
 	
-	void Tick_Game(){
+	void Tick(){
 		++U.shellTime;
 
 		if (N == true) U.player.accelerate(+1);
@@ -277,12 +315,19 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 //		if (U.velocity > 2) U.velocity = 2;
 //		else if (U.velocity <= 1) U.velocity = 1f;
 //		
-//		if (U.CurMouse != null && (mouseClick||mouseDrag)) {
-//			U.player.x = (int) U.CurMouse.getX() - (U.world_x_pixels2);
-//			U.player.y = (int) U.CurMouse.getY() - (U.world_y_pixels2);
-//			U.player.vx = 0;
-//			U.player.vy = 0;
-//		}
+		if (U.currentMode == GameMode.Creative 
+				&& U.CurMouse != null 
+				&& (mouseClick||mouseDrag)
+				&& U.CurMouse.y > U.UI
+				&& U.CurMouse.y < U.world_y_pixels
+				&& U.CurMouse.x > 0 
+				&& U.CurMouse.x < U.world_x_pixels) {
+			U.player.x = (int) U.CurMouse.getX() - (U.world_x_pixels2);
+			U.player.y = (int) U.CurMouse.getY() - (U.world_y_pixels2);
+			U.player.vx = 0;
+			U.player.vy = 0;
+			U.player.a = (float) -Math.PI;
+		}
 		
 		synchronized (U.list_of_rectangles_sync) {
 			for (Rectangle _r : U.list_of_rectangles_sync) {
@@ -298,12 +343,12 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		}
 		U.player.Walk();
 		
-		//levels and difficulty
-		if (_TICK % U.TicksPerLevel == 0) ++U.Level;
-		
-		if (U.c_pixel > U.min_c) U.c_pixel -= U.c_red;
-		if (U.velocity < U.max_v_multiplier) U.velocity += U.v_inc;
-		
+		if (U.currentMode == GameMode.GameOn) {
+			//levels and difficulty
+			if (_TICK % U.TicksPerLevel == 0) ++U.Level;
+			if (U.c_pixel > U.min_c) U.c_pixel -= U.c_red;
+			if (U.velocity < U.max_v_multiplier) U.velocity += U.v_inc;
+		}		
 		
 		P.Cleanup(); //photon manager cleanup
 		DebrisCleanup();
@@ -376,7 +421,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 				repaint();
 			}
 			++_TICKS_CUR_SEC;
-			if (U.currentMode == GameMode.GameOn || U.currentMode == GameMode.FreePlay) Tick();
+			if (U.currentMode == GameMode.GameOn || U.currentMode == GameMode.Creative) Tick();
 			
 			if (System.currentTimeMillis() > _TIME_OF_LAST_SECOND + 1000) {
 				_TIME_OF_LAST_SECOND = System.currentTimeMillis();
@@ -437,39 +482,26 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		if (e.getKeyChar() == 'w' || e.getKeyChar() == 'W') N = false;
-		if (e.getKeyChar() == 'd' || e.getKeyChar() == 'D') E = false;
-		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S') S = false;
-		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') W = false;
-		
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) c_dn = false;
-		if (e.getKeyCode() == KeyEvent.VK_UP) c_up = false;
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) speed_dn = false;
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) speed_up = false;
-		
+		if (e.getKeyChar() == 'w' || e.getKeyChar() == 'W' || e.getKeyCode() == KeyEvent.VK_UP) N = false;
+		if (e.getKeyChar() == 'd' || e.getKeyChar() == 'D' || e.getKeyCode() == KeyEvent.VK_RIGHT) E = false;
+		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S' || e.getKeyCode() == KeyEvent.VK_DOWN) S = false;
+		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A' || e.getKeyCode() == KeyEvent.VK_LEFT) W = false;	
 	}
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			U.debug = !U.debug;
-			System.out.println("Debug="+U.debug);
-		}
-		if (e.getKeyChar() == 'c' || e.getKeyChar() == 'C') {
-			U.show_all_locations = !U.show_all_locations;
-			System.out.println("show_all_locations="+U.show_all_locations);
-		}
-		
-		if (e.getKeyChar() == 'w' || e.getKeyChar() == 'W') N = true;
-		if (e.getKeyChar() == 'd' || e.getKeyChar() == 'D') E = true;
-		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S') S = true;
-		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') W = true;
-
-		if (e.getKeyCode() == KeyEvent.VK_DOWN)	c_dn = true;
-		if (e.getKeyCode() == KeyEvent.VK_UP) c_up = true;
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) speed_dn = true;
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) speed_up = true;
+//		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+//			U.show_light_cones = !U.show_light_cones;
+//			System.out.println("Debug="+U.show_light_cones);
+//		}
+//		if (e.getKeyChar() == 'c' || e.getKeyChar() == 'C') {
+//			U.show_all_locations = !U.show_all_locations;
+//			System.out.println("show_all_locations="+U.show_all_locations);
+//		}
+		if (e.getKeyChar() == 'w' || e.getKeyChar() == 'W' || e.getKeyCode() == KeyEvent.VK_UP) N = true;
+		if (e.getKeyChar() == 'd' || e.getKeyChar() == 'D' || e.getKeyCode() == KeyEvent.VK_RIGHT) E = true;
+		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S' || e.getKeyCode() == KeyEvent.VK_DOWN) S = true;
+		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A' || e.getKeyCode() == KeyEvent.VK_LEFT) W = true;	
 	}
 	
 	@Override
@@ -486,8 +518,13 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	@Override
 	public void mousePressed(MouseEvent e) {
 		mouseClick=true;
-		//U.GameOn = true;
-		//U.show_all_locations = false;
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		mouseClick=false;
+		mouseDrag=false;
+		B.ProcessMouseClick();
 	}
 	
 	@Override

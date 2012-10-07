@@ -72,7 +72,7 @@ public final class Utility {
 	
 	public int UI = 60;
 	
-	boolean debug = false;
+	boolean show_light_cones = false;
 	boolean show_all_locations = false;
 
 	//boolean GameOn = true;

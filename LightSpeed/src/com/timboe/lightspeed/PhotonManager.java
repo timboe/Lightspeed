@@ -95,11 +95,12 @@ public class PhotonManager {
 	void RenderShells(Graphics2D _g2) {
 		synchronized (list_of_shells_sync) {
 			for (PhotonShell _p : list_of_shells_sync) {
-				if (_p.GID == 49) {
-					float c = 1-(_p.radius/U.max_radius);
-					_g2.setColor(new Color(c,c,c));
+				//if (_p.GID == 49) {
+					//float c = 1-(_p.radius/U.max_radius);
+					_g2.setColor(Color.white);
+					if (_p.G2ID%10 == 0) _g2.setColor(Color.gray);
 					_g2.drawOval((int)(_p.x - _p.GetRadius()),(int) (_p.y - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
-				}
+				//}
 			}
 		}
 	}

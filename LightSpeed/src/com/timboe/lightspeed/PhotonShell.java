@@ -14,6 +14,7 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 	boolean dead; //to be cleaned up
 	private boolean seen;
 	int GID; //matches with a rectangle
+	int G2ID; //unique to this shell
 	boolean isDebris;
 	
 	PhotonShell(float _x, float _y, float _vx, float _vy, int _shape_size, boolean _SuperLumi, int _GID, boolean _isDebris) {
@@ -25,6 +26,7 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 		radius = 0f;
 		dead = false;
 		GID = _GID;
+		G2ID = ++U.GID;
 		createTime = U.shellTime;
 		isDebris = _isDebris;
 	}
