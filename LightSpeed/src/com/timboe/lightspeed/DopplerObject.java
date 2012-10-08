@@ -58,6 +58,10 @@ public class DopplerObject {
 	void SetDopplerColourMap(double doppler) {
 		int fractionRed = (int) (((doppler + U.doppler_range) / (2 * U.doppler_range)) * 255);
 		int fractionBlu = 255 - fractionRed;
+		if (x_offset != (short)0 || y_offset != (short)0) {
+			fractionRed /= 2;
+			fractionBlu /= 2;
+		}
 		shape_color = new Color(fractionRed, 0, fractionBlu);
 	}
 	

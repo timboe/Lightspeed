@@ -64,12 +64,20 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 	void Render(Graphics2D _g2) {
 		if (isDebris == true) {
 			_g2.setColor(Color.gray);
-			_g2.fillRoundRect(Math.round(x), Math.round(y), pixel_size, pixel_size, pixel_size2, pixel_size2);
+			_g2.fillRoundRect(Math.round(x), 
+					Math.round(y), 
+					pixel_size, 
+					pixel_size, 
+					pixel_size2, 
+					pixel_size2);
 			if (U.show_all_locations == true) {
 				synchronized (U.list_of_debris_sync) {
 					for (Debris D : U.list_of_debris_sync) {
 						if (D.GID == GID) {
-							_g2.drawLine((int)(x+pixel_size2), (int)(y+pixel_size2), (int)(D.x+pixel_size2), (int)(D.y+pixel_size2));
+							_g2.drawLine((int)(x+pixel_size2), 
+									(int)(y+pixel_size2), 
+									(int)(D.x+pixel_size2), 
+									(int)(D.y+pixel_size2));
 							break;
 						}
 					}
@@ -86,14 +94,22 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 			//SuperLumi = true;
 		}
 		_g2.setColor(shape_color);
-		_g2.fillRoundRect(Math.round(x+x_offset), Math.round(y+y_offset), pixel_size, pixel_size, pixel_size2, pixel_size2);
+		_g2.fillRoundRect(Math.round(x+x_offset), 
+				Math.round(y+y_offset), 
+				pixel_size, 
+				pixel_size, 
+				pixel_size2, 
+				pixel_size2);
 	
 		
 		if (U.show_all_locations == true) {
 			synchronized (U.list_of_rectangles_sync) {
 				for (Rectangle R : U.list_of_rectangles_sync) {
 					if (R.GID == GID) {
-						_g2.drawLine((int)(x+x_offset+pixel_size2), (int)(y+y_offset+pixel_size2), (int)(R.x+pixel_size2), (int)(R.y+pixel_size2));
+						_g2.drawLine((int)(x+x_offset+pixel_size2), 
+								(int)(y+y_offset+pixel_size2), 
+								(int)(R.x+pixel_size2), 
+								(int)(R.y+pixel_size2));
 						break;
 					}
 				}				

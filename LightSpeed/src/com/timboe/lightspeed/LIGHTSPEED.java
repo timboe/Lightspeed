@@ -59,7 +59,16 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		}
 		
 		if (U.currentMode == GameMode.GameOn) NewGame(); //DEBUG
-		if (U.currentMode == GameMode.Creative) NewCreative(); //DEBUG
+		if (U.currentMode == GameMode.Creative) {
+			NewCreative(); //DEBUG
+			U.list_of_rectangles_sync.add( new Rectangle(
+					(int) (U.R.nextFloat()*(U.world_x_pixels - 10) - U.world_x_pixels2),
+					(int) (U.R.nextFloat()*(U.world_y_pixels - 10 - U.UI) - U.world_y_pixels2 + U.UI), 
+					7+U.R.nextInt(5)-2,
+					0.3f) );
+			U.show_all_locations = true;
+			U.c_pixel = 1;
+		}
 	}
 	
 	public void NewGame() {
@@ -116,15 +125,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 
 	@Override
 	public void paint (Graphics g) {
-//		final float TIME = (System.nanoTime() / 1000000);
-//		TIME_TO_RENDER = TIME - TIME_OF_FRAME;
-//		TIME_OF_FRAME = TIME;
-//		++FRAMES;
-//		if (TIME > TIME_OF_LAST_SECOND) {
-//			FPS = FRAMES - FRAMES_LAST_SECOND;
-//			FRAMES_LAST_SECOND = FRAMES;
-//			TIME_OF_LAST_SECOND = (float) (TIME + 1000.);
-//		}
 
 		final Graphics2D g2 = (Graphics2D)g;
 		if (U.af_none == null) U.af_none = g2.getTransform();
@@ -152,24 +152,9 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		
 		if (U.option_Length == true) doLengthContractionTransform(g2);
 		
-//		if (U.option_Time == true) {
-//			U.time_dilation_X = 1;// - ((1 - GammaX) * 8);// (super mode)
-//			U.time_dilation_Y = 1;// - ((1 - GammaY) * 8);// (super mode)
-//			float tmin = Math.min(GammaX, GammaY);
-//			tmin *= 100;
-//			tmin -= 89.98;
-//			//tmin = 10 - tmin;
-//			tmin *= 100;
-//			System.out.println("Debug: "+(int)tmin); 
-//			U.time_dilation = (int)tmin;
-//		} else {
-//			U.time_dilation_X = 1;
-//			U.time_dilation_Y = 1;
-//		}
-		
 		g2.setColor(Color.white);
 		g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI, U.world_x_pixels, U.world_y_pixels - U.UI);
-						
+		
 		for (BackgroundStar _s : U.list_of_stars) _s.Render(g2);
 		
 		//draw what player sees
@@ -196,25 +181,20 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		g2.translate(U.world_x_pixels2, U.world_y_pixels2);
 		
 		if (U.option_Length == true) doLengthContractionTransform(g2);
-//		if (U.option_Time == true) {
-//			//U.time_dilation_X = 1 - ((1 - GammaX) * 8);// (super mode)
-//			//U.time_dilation_Y = 1 - ((1 - GammaY) * 8);// (super mode)
-//			U.time_dilation_X = 1;// - ((1 - GammaX) * 8);// (super mode)
-//			U.time_dilation_Y = 1;// - ((1 - GammaY) * 8);// (super mode)
-//			float tmin = Math.min(GammaX, GammaY);
-//			tmin *= 100;
-//			tmin -= 89.98;
-//			//tmin = 10 - tmin;
-//			tmin *= 100;
-//			System.out.println("Debug: "+(int)tmin); 
-//			U.time_dilation = (int)tmin;
-//		} else {
-//			U.time_dilation_X = 1;
-//			U.time_dilation_Y = 1;
-//		}
 		
 		g2.setColor(Color.white);
-		g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI, U.world_x_pixels, U.world_y_pixels - U.UI);
+		g2.drawRect(0 - U.world_x_pixels2, 
+				0 - U.world_y_pixels2 + U.UI, 
+				U.world_x_pixels, 
+				U.world_y_pixels - U.UI);
+		g2.drawRect(0 - U.world_x_pixels2, 
+				0 - U.world_y_pixels2 - U.world_y_pixels + U.UI ,
+				U.world_x_pixels, 
+				U.world_y_pixels + U.world_y_pixels + U.world_y_pixels - U.UI);
+		g2.drawRect(0 - U.world_x_pixels2 - U.world_x_pixels, 
+				0 - U.world_y_pixels2 + U.UI,
+				U.world_x_pixels + U.world_x_pixels + U.world_x_pixels, 
+				U.world_y_pixels - U.UI);
 		
 		for (BackgroundStar _s : U.list_of_stars) _s.Render(g2);
 		
@@ -284,7 +264,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	
 	void doLengthContractionTransform(Graphics2D g2) {
 		g2.rotate(U.player.GetHeading());
-		g2.scale(0.9, 1);
+		g2.scale(1, U.player.GetGameGamma());
 		g2.rotate(-U.player.GetHeading());
 	}
 	
@@ -318,10 +298,8 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 
 		++U.shellTime;
 
-
 		//break point
 		//if (_TICK%U.time_dilation == 0) return;
-		
 
 		synchronized (U.list_of_rectangles_sync) {
 			for (Rectangle _r : U.list_of_rectangles_sync) {

@@ -21,7 +21,8 @@ public class ButtonManager {
 	DisplayButton Start_Toggle_Doppler;
 	DisplayButton Start_Toggle_LengthCon;
 	DisplayButton Start_Toggle_TimeCon;
-	
+	DisplayButton Start_Toggle_Toroid;
+
 	DisplayButton CreativeC;
 	DisplayButton CreativeC_Plus;
 	DisplayButton CreativeC_Minus;
@@ -61,10 +62,12 @@ public class ButtonManager {
 		StartCreative          = new DisplayButton(50, 500, 200, 50, "Start Creative", "", true);
 		Start_Toggle_Doppler   = new DisplayButton(400, 400, 250, 50, "Doppler Shift", "", true);
 		Start_Toggle_LengthCon = new DisplayButton(700, 400, 250, 50, "Length Contraction", "", true);
-		Start_Toggle_TimeCon   = new DisplayButton(550, 500, 250, 50, "Time Dialation", "", true);
-		Start_Toggle_Doppler.isYesNo = true;
+		Start_Toggle_TimeCon   = new DisplayButton(400, 500, 250, 50, "Time Dialation", "", true);
+		Start_Toggle_Toroid    = new DisplayButton(700, 500, 250, 50, "Toroidal Universe", "", true);
+		Start_Toggle_Doppler.isYesNo   = true;
 		Start_Toggle_LengthCon.isYesNo = true;
-		Start_Toggle_TimeCon.isYesNo = true;
+		Start_Toggle_TimeCon.isYesNo   = true;
+		Start_Toggle_Toroid.isYesNo    = true;
 		//creative mode
 		CreativeAsteroids       = new DisplayButton(b2x,            0,      220,    U.UI/2, "Asteroids:", "", false);
 		CreativeAsteroids_Minus = new DisplayButton(b2x+220,        0,      U.UI/2, U.UI/2, "-", "", true);
@@ -78,8 +81,8 @@ public class ButtonManager {
 		CreativeShowTrue        = new DisplayButton(670,            0,      175,    U.UI,   "True Position", "", true);
 		CreativeShowLight       = new DisplayButton(670+175,        0,      155,    U.UI,   "Light Cones", "", true);
 		CreativeAsteroids.precision = false;
-		CreativeShowTrue.isYesNo = true;
-		CreativeShowLight.isYesNo = true;
+		CreativeShowTrue.isYesNo    = true;
+		CreativeShowLight.isYesNo   = true;
 	}
 
 	public static ButtonManager GetButtonManager() {
@@ -117,9 +120,11 @@ public class ButtonManager {
 			Start_Toggle_Doppler.SetYesNoValue(U.option_Doppler);
 			Start_Toggle_LengthCon.SetYesNoValue(U.option_Length);
 			Start_Toggle_TimeCon.SetYesNoValue(U.option_Time);
+			Start_Toggle_Toroid.SetYesNoValue(U.option_Torus);
 			Start_Toggle_Doppler.Render(_g2);
 			Start_Toggle_LengthCon.Render(_g2);
 			Start_Toggle_TimeCon.Render(_g2);
+			Start_Toggle_Toroid.Render(_g2);
 		} else if (U.currentMode == GameMode.Creative) {
 			Quit.Render(_g2);
 			CreativeC.SetValue(U.c_pixel);
@@ -175,6 +180,8 @@ public class ButtonManager {
 				U.option_Length = !U.option_Length;
 			} else if (Start_Toggle_TimeCon.GetHover() == true) {
 				U.option_Time = !U.option_Time;
+			} else if (Start_Toggle_Toroid.GetHover() == true) {
+				U.option_Torus = !U.option_Torus;
 			}
 		} else if (U.currentMode == GameMode.Creative) {
 			if (CreativeShowLight.GetHover() == true) {
@@ -183,16 +190,16 @@ public class ButtonManager {
 				U.show_all_locations = !U.show_all_locations;
 			} else if (CreativeAsteroidV_Plus.GetHover() == true) {
 				U.velocity += 0.05f;
-				if (U.velocity > 1.25f) U.velocity = 1.25f;
+				//if (U.velocity > 1.25f) U.velocity = 1.25f;
 			} else if (CreativeAsteroidV_Minus.GetHover() == true) {
 				U.velocity -= 0.05;
-				if (U.velocity < 0.f) U.velocity = 0f;
+				//if (U.velocity < 0.f) U.velocity = 0f;
 			} else if (CreativeC_Plus.GetHover() == true) {
 				U.c_pixel += 0.05f;
-				if (U.c_pixel > 1f) U.c_pixel = 1f;
+				//if (U.c_pixel > 1f) U.c_pixel = 1f;
 			} else if (CreativeC_Minus.GetHover() == true) {
 				U.c_pixel -= 0.05;
-				if (U.c_pixel < 0.2f) U.c_pixel = 0.2f;
+				//if (U.c_pixel < 0.2f) U.c_pixel = 0.2f;
 			} else if (CreativeAsteroids_Plus.GetHover() == true) {
 				synchronized (U.list_of_rectangles_sync) {
 					U.list_of_rectangles_sync.add( new Rectangle(

@@ -30,7 +30,7 @@ public final class Utility {
 	final float player_acceleration = 0.005f;
 	
 	public float max_radius = (float) Math.hypot(world_x_pixels, world_y_pixels-UI);
-	public float max_radius_toroid = (float) Math.hypot(2*world_x_pixels, world_y_pixels-UI );
+	public float max_radius_toroid = (float) Math.hypot(2*world_x_pixels, 2*(world_y_pixels-UI) );
 		
 	public float velocity = 1f;
 	public float c_pixel = 1f;
@@ -92,7 +92,7 @@ public final class Utility {
 	boolean option_Doppler = true;
 	boolean option_Length = true;
 	boolean option_Time = false;
-	boolean option_Torus = true;
+	boolean option_Torus = false;
 	
 	public Color default_colour = new Color(128,0,128);
 	

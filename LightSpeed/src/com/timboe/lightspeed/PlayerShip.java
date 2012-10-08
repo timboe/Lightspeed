@@ -64,21 +64,32 @@ public class PlayerShip {
 	}
 	
 	void Constrain() {
-		if (x < (0 - U.world_x_pixels2) ) {
-			vx = Math.abs(vx);
-			a = (float) (+Math.PI - GetHeading());
-		} else if (x + (2*r) >= U.world_x_pixels2) {
-			vx = -(Math.abs(vx));
-			a = (float) (-Math.PI - GetHeading());
+		if (U.option_Torus == true) {
+			if (x < (0 - U.world_x_pixels2) )        x += U.world_x_pixels;
+			else if (x + (2*r) >= U.world_x_pixels2) x -= U.world_x_pixels;
+			if (y < (0 - U.world_y_pixels2 + U.UI) ) y += U.world_y_pixels - U.UI;
+			else if (y + (2*r) >= U.world_y_pixels2) y -= U.world_y_pixels - U.UI;
+		} else {
+			if (x < (0 - U.world_x_pixels2) ) {
+				vx = Math.abs(vx);
+				a = (float) (+Math.PI - GetHeading() - Math.PI/2.);
+			} else if (x + (2*r) >= U.world_x_pixels2) {
+				vx = -(Math.abs(vx));
+				a = (float) (-Math.PI - GetHeading() - Math.PI/2.);
+			}
+			
+			if (y < (0 - U.world_y_pixels2 + U.UI) ) {
+				vy = Math.abs(vy);
+				a = (float) (2*Math.PI - GetHeading() + Math.PI/2.);
+			} else if (y + (2*r) >= U.world_y_pixels2) {
+				vy = -(Math.abs(vy));
+				a = (float) (-2*Math.PI - GetHeading() + Math.PI/2.);
+			}
 		}
 		
-		if (y < (0 - U.world_y_pixels2 + U.UI) ) {
-			vy = Math.abs(vy);
-			a = (float) (2*Math.PI - GetHeading());
-		} else if (y + (2*r) >= U.world_y_pixels2) {
-			vy = -(Math.abs(vy));
-			a = (float) (-2*Math.PI - GetHeading());
-		}
+		
+		
+
 		
 		float speed = (float) Math.hypot(vx, vy);
 		if (speed >= U.c_pixel) {
@@ -89,25 +100,21 @@ public class PlayerShip {
 	
 	public double GetGamma() {
 		double velocity = (float) Math.hypot(vx, vy);
-		double gamma = (float) Math.abs(1. / ( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
-		//gamma = 1 - (gamma * U.gamma_suppression);
-		//System.out.println("Debug gamma: "+gamma); 
-		return gamma;
+		return (float) Math.abs(1. / ( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
 	}
 	
 	public double GetGameGamma() {
 		//It's Relativistic gamma which is mapped to effect magnitude
 		double gamma = GetGamma();
-		//if (gamma <= 1.000001f) return 1f;
-		if (gamma > 1000f) gamma = 1000f;
-		gamma /= 10000f;
+		if (gamma > 500f) gamma = 500f;
+		gamma /= 3000f;
 		gamma = 1f - gamma;
 		System.out.println("Debug game gamma: "+gamma); 
-		return 1f - gamma;
+		return gamma;
 	}
 	
 	public float GetHeading() {
-		return (float) Math.atan2(0-vx,0-vy);
+		return (float) (Math.atan2(vx,vy));
 	}
 	
 	
