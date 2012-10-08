@@ -15,7 +15,7 @@ public class Rectangle extends DopplerObject {
 	int GID;
 	
 	Rectangle(float _x, float _y, int _shape_size, float _speed) {
-		super(_x, _y, 0, 0);
+		super(_x, _y, 0, 0, (short)0, (short)0);
 		
 		shape_size = _shape_size;
 		shape_size2 = _shape_size/2;
@@ -44,20 +44,39 @@ public class Rectangle extends DopplerObject {
 	void Tick(int _tick) {
 		if (dist_to_tick > U.granularity) {
 			dist_to_tick = 0;
-			P.AddShell( new PhotonShell(x, y, vx, vy, shape_size, SuperLumi, GID, false) );
+			P.AddShell( new PhotonShell(x, y, vx, vy, (short)0, (short)0, shape_size, GID, false) );
+			if (U.option_Torus == true) {
+				P.AddShell( new PhotonShell(x, y, vx, vy, (short)(x-U.world_x_pixels), (short)0, shape_size, GID, false) );
+				P.AddShell( new PhotonShell(x, y, vx, vy, (short)(x+U.world_x_pixels), (short)0, shape_size, GID, false) );
+				P.AddShell( new PhotonShell(x, y, vx, vy, (short)0, (short)(y-U.world_y_pixels-U.UI), shape_size, GID, false) );
+				P.AddShell( new PhotonShell(x, y, vx, vy, (short)0, (short)(y+U.world_y_pixels-U.UI), shape_size, GID, false) );
+			}
 		}
 	}
 	
 	void Constrain() {
-		if (x < (0 - U.world_x_pixels2)) {
-			a = (float) (+Math.PI - a);
-		} else if (x + shape_size >= U.world_x_pixels2) {
-			a = (float) (-Math.PI - a);
-		}
-		if (y < (0 - U.world_y_pixels2 + U.UI) ) {
-			a = (float) (2*Math.PI - a);
-		} else if (y + shape_size >= U.world_y_pixels2) {
-			a = (float) (-2*Math.PI - a);
+		if (U.option_Torus == true) {
+			if (x + shape_size < (0 - U.world_x_pixels2)) {
+				x += U.world_x_pixels;
+			} else if (x >= U.world_x_pixels2) {
+				x -= U.world_x_pixels;
+			}
+			if (y + shape_size < (0 - U.world_y_pixels2 + U.UI) ) {
+				y += U.world_y_pixels - U.UI;
+			} else if (y >= U.world_y_pixels2) {
+				y -= U.world_y_pixels - U.UI;
+			}
+		} else {
+			if (x < (0 - U.world_x_pixels2)) {
+				a = (float) (+Math.PI - a);
+			} else if (x + shape_size >= U.world_x_pixels2) {
+				a = (float) (-Math.PI - a);
+			}
+			if (y < (0 - U.world_y_pixels2 + U.UI) ) {
+				a = (float) (2*Math.PI - a);
+			} else if (y + shape_size >= U.world_y_pixels2) {
+				a = (float) (-2*Math.PI - a);
+			}
 		}
 	}
 	
@@ -66,11 +85,11 @@ public class Rectangle extends DopplerObject {
 		else shape_color = U.default_colour;
 		if (Math.hypot(vx, vy) > U.c_pixel) {
 			shape_color = Color.yellow;
-			SuperLumi = true;
+			DoSuperLumiSpikes(_g2, shape_size2);
+			//SuperLumi = true;
 		}
 		_g2.setColor(shape_color);
 		_g2.drawRoundRect((int)x, (int)y, shape_size, shape_size, shape_size2, shape_size2);
-		DoSuperLumiSpikes(_g2, shape_size2);
 	}
 	
 

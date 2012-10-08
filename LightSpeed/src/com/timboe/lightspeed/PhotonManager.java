@@ -97,7 +97,7 @@ public class PhotonManager {
 				//float c = 1-(_p.radius/U.max_radius);
 				_g2.setColor(_p.shell_color);
 				//if (_p.G2ID%10 == 0) _g2.setColor(Color.gray);
-				_g2.drawOval((int)(_p.x - _p.GetRadius()),(int) (_p.y - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
+				_g2.drawOval((int)(_p.x - _p.x_offset - _p.GetRadius()),(int) (_p.y - _p.y_offset - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
 			}
 		}
 	}

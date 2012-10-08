@@ -59,6 +59,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		}
 		
 		if (U.currentMode == GameMode.GameOn) NewGame(); //DEBUG
+		if (U.currentMode == GameMode.Creative) NewCreative(); //DEBUG
 	}
 	
 	public void NewGame() {

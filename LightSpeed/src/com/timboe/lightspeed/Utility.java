@@ -22,13 +22,15 @@ public final class Utility {
 	final int world_y_pixels = 600;
 	final int world_x_pixels2 = world_x_pixels/2;
 	final int world_y_pixels2 = world_y_pixels/2;
+	public int UI = 60;
 	
 	//player temp params
 	PlayerShip player;
 	final float player_max_v = 0.99f;
 	final float player_acceleration = 0.005f;
 	
-	public float max_radius = 1160f;
+	public float max_radius = (float) Math.hypot(world_x_pixels, world_y_pixels-UI);
+	public float max_radius_toroid = (float) Math.hypot(2*world_x_pixels, world_y_pixels-UI );
 		
 	public float velocity = 1f;
 	public float c_pixel = 1f;
@@ -65,14 +67,12 @@ public final class Utility {
 //	public int time_dilation = 1000;
 	
 	public int shellTime = 0;
-	
-	public int UI = 60;
-	
+		
 	boolean show_light_cones = false;
 	boolean show_all_locations = false;
 
 	//boolean GameOn = true;
-	GameMode currentMode = GameMode.GameOn;
+	GameMode currentMode = GameMode.Creative;
 	int Level = 1;
 	int TicksPerLevel = 500;
 	int Lives = 0;
@@ -92,6 +92,7 @@ public final class Utility {
 	boolean option_Doppler = true;
 	boolean option_Length = true;
 	boolean option_Time = false;
+	boolean option_Torus = true;
 	
 	public Color default_colour = new Color(128,0,128);
 	

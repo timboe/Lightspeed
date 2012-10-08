@@ -12,15 +12,21 @@ public class DopplerObject {
 	public float vx;
 	public float vy;
 	
+	//for torus
+	short x_offset;
+	short y_offset;
+	
 	public Color shape_color;
 	
-	public boolean SuperLumi=false;
+	//public boolean SuperLumi=false;
 	
-	DopplerObject(float _x, float _y, float _vx, float _vy) {
+	DopplerObject(float _x, float _y, float _vx, float _vy, short _xo, short _yo) {
 		x = _x;
 		y = _y;
 		vx = _vx;
 		vy = _vy;
+		x_offset = _xo;
+		y_offset = _yo;
 	}
 	
 	void CalculateColour() {
@@ -36,7 +42,7 @@ public class DopplerObject {
 		double pl_vy_axis = U.player.vy * Math.cos(angle);
 		double pl_axis_velocity = Math.hypot(pl_vx_axis, pl_vy_axis);	
 
-		SuperLumi = false;
+		//SuperLumi = false;
 		double doppler = (my_axis_velocity-pl_axis_velocity) / ( 1 - ((my_axis_velocity*pl_axis_velocity)/(U.c_pixel*U.c_pixel)) );
 
 		if ((my_vx_axis+my_vy_axis)+(pl_vx_axis+pl_vy_axis) < 0) doppler *= -1;
@@ -56,13 +62,13 @@ public class DopplerObject {
 	}
 	
 	void DoSuperLumiSpikes(Graphics2D _g2, float ss2) {
-		if (SuperLumi == true) {
+		//if (SuperLumi == true) {
 			for (int S=0; S < U.superLumiSpikes; ++S) {
 				double randomAngle = (U.R.nextFloat() * Math.PI * 2);
 				int sx = (int) (x + ss2 + ((U.R.nextInt(U.superLumiSpikeSize) + 5) * Math.cos(randomAngle)));
 				int sy = (int) (y + ss2 + ((U.R.nextInt(U.superLumiSpikeSize) + 5) * Math.sin(randomAngle)));
 				_g2.drawLine((int)(x+ss2), (int)(y+ss2), sx, sy);
 			}
-		}
+		//}
 	}
 }

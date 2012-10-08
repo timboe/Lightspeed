@@ -14,7 +14,7 @@ public class Debris extends DopplerObject {
 	boolean dead;
 	
 	Debris(Rectangle R) {
-		super(R.x+R.shape_size2, R.y+R.shape_size2, R.vx, R.vy);
+		super(R.x+R.shape_size2, R.y+R.shape_size2, R.vx, R.vy, (short)0, (short)0);
 		
 		vx *= 1+U.R.nextFloat();
 		vy *= 1+U.R.nextFloat();
@@ -60,7 +60,7 @@ public class Debris extends DopplerObject {
 		if (GetDead() == true) return;
 		if (dist_to_tick > U.granularity) {
 			dist_to_tick = 0;
-			P.AddShell( new PhotonShell(x, y, vx, vy, 4, false, GID, true) );
+			P.AddShell( new PhotonShell(x, y, vx, vy, (short)0, (short)0, 4, GID, true) );
 		}
 	}
 	
