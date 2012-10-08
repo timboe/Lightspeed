@@ -5,24 +5,27 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 
 public class ButtonManager {
-	private Utility U = Utility.GetUtility();
-	private static final ButtonManager singleton = new ButtonManager();
-	
-    Font display_font = new Font(Font.MONOSPACED, Font.BOLD, 20);
-	    
+	public static ButtonManager GetButtonManager() {
+		return singleton;
+	}
+	private final Utility U = Utility.GetUtility();
+
+    private static final ButtonManager singleton = new ButtonManager();
+
+	Font display_font = new Font(Font.MONOSPACED, Font.BOLD, 20);
 	DisplayButton PlayingC;
 	DisplayButton PlayingAsteroidSpeed;
 	DisplayButton PlayingScore;
 	DisplayButton PlayingLevel;
+
 	ShipGraphic LivesShip;
-	
 	DisplayButton StartArcade;
 	DisplayButton StartCreative;
 	DisplayButton Start_Toggle_Doppler;
 	DisplayButton Start_Toggle_LengthCon;
 	DisplayButton Start_Toggle_TimeCon;
-	DisplayButton Start_Toggle_Toroid;
 
+	DisplayButton Start_Toggle_Toroid;
 	DisplayButton CreativeC;
 	DisplayButton CreativeC_Plus;
 	DisplayButton CreativeC_Minus;
@@ -33,16 +36,17 @@ public class ButtonManager {
 	DisplayButton CreativeAsteroidV_Plus;
 	DisplayButton CreativeAsteroidV_Minus;
 	DisplayButton CreativeShowTrue;
-	DisplayButton CreativeShowLight;
-	
-    DisplayButton NewGame;
-	
+
+    DisplayButton CreativeShowLight;
+
+	DisplayButton NewGame;
+
 	DisplayButton Quit;
-	
+
 	private ButtonManager() {
-		int b2x = 0   + 70;
-		int b3x = b2x + 320;
-		int b4x = b3x + 175;
+		final int b2x = 0   + 70;
+		final int b3x = b2x + 320;
+		final int b4x = b3x + 175;
 		Quit = new DisplayButton(0, 0, b2x, U.UI, "Quit","", true);
 		//Quit.text_y *= 1.5;
 		//End of game
@@ -85,10 +89,69 @@ public class ButtonManager {
 		CreativeShowLight.isYesNo   = true;
 	}
 
-	public static ButtonManager GetButtonManager() {
-		return singleton;
+	public void ProcessMouseClick() {
+		if (U.currentMode == GameMode.GameOn
+				|| U.currentMode == GameMode.GameOver
+				|| U.currentMode == GameMode.Creative) {
+			if (Quit.GetHover() == true) {
+				U.currentMode = GameMode.Title;
+				U.titleCascade = 1;
+			}
+		}
+		if (U.currentMode == GameMode.Title) {
+			if (StartArcade.GetHover() == true) {
+				U.MAIN.NewGame();
+				U.currentMode = GameMode.GameOn;
+			} else if (StartCreative.GetHover() == true) {
+				U.MAIN.NewCreative();
+				U.currentMode = GameMode.Creative;
+			} else if (Start_Toggle_Doppler.GetHover() == true) {
+				U.option_Doppler = !U.option_Doppler;
+			} else if (Start_Toggle_LengthCon.GetHover() == true) {
+				U.option_Length = !U.option_Length;
+			} else if (Start_Toggle_TimeCon.GetHover() == true) {
+				U.option_Time = !U.option_Time;
+			} else if (Start_Toggle_Toroid.GetHover() == true) {
+				U.option_Torus = !U.option_Torus;
+			}
+		} else if (U.currentMode == GameMode.Creative) {
+			if (CreativeShowLight.GetHover() == true) {
+				U.show_light_cones = !U.show_light_cones;
+			} else if (CreativeShowTrue.GetHover() == true) {
+				U.show_all_locations = !U.show_all_locations;
+			} else if (CreativeAsteroidV_Plus.GetHover() == true) {
+				U.velocity += 0.01f;
+				//if (U.velocity > 1.25f) U.velocity = 1.25f;
+			} else if (CreativeAsteroidV_Minus.GetHover() == true) {
+				U.velocity -= 0.01;
+				//if (U.velocity < 0.f) U.velocity = 0f;
+			} else if (CreativeC_Plus.GetHover() == true) {
+				U.c_pixel += 0.05f;
+				//if (U.c_pixel > 1f) U.c_pixel = 1f;
+			} else if (CreativeC_Minus.GetHover() == true) {
+				U.c_pixel -= 0.05;
+				//if (U.c_pixel < 0.2f) U.c_pixel = 0.2f;
+			} else if (CreativeAsteroids_Plus.GetHover() == true) {
+				synchronized (U.list_of_rectangles_sync) {
+					U.list_of_rectangles_sync.add( new Rectangle(
+							(int) (U.R.nextFloat()*(U.world_x_pixels - 10) - U.world_x_pixels2),
+							(int) (U.R.nextFloat()*(U.world_y_pixels - 10 - U.UI) - U.world_y_pixels2 + U.UI),
+							7+U.R.nextInt(5)-2,
+							1f) );
+				}
+			} else if (CreativeAsteroids_Minus.GetHover() == true) {
+				synchronized (U.list_of_rectangles_sync) {
+					U.list_of_rectangles.pollLast();
+				}
+			}
+		} else if (U.currentMode == GameMode.GameOver) {
+			if (NewGame.GetHover() == true) {
+				U.MAIN.NewGame();
+				U.currentMode = GameMode.GameOn;
+			}
+		}
 	}
-	
+
 	public void Render(Graphics2D _g2) {
 		_g2.setFont(display_font);
 		_g2.setColor(Color.black);
@@ -147,77 +210,14 @@ public class ButtonManager {
 		//Do FPS
 		_g2.setColor(Color.white);
 		_g2.drawString("FPS: "+U.MAIN._FPS, 900, 590);
-		
+
 	}
-	
+
 	public void RenderLives(Graphics2D _g2) {
 		if (U.Lives == 0) return;
-		int offset = 50;
+		final int offset = 50;
 		for (int L=1; L <= U.Lives; ++L) {
 			LivesShip.Render(_g2, U.world_x_pixels - (L*offset), 5+U.UI/2, -(float)Math.PI/2f, false, false);
-		}	
-	}
-	
-	public void ProcessMouseClick() {
-		if (U.currentMode == GameMode.GameOn 
-				|| U.currentMode == GameMode.GameOver 
-				|| U.currentMode == GameMode.Creative) {
-			if (Quit.GetHover() == true) {
-				U.currentMode = GameMode.Title;
-				U.titleCascade = 1;
-			}
-		}
-		if (U.currentMode == GameMode.Title) {
-			if (StartArcade.GetHover() == true) {
-				U.MAIN.NewGame();
-				U.currentMode = GameMode.GameOn;
-			} else if (StartCreative.GetHover() == true) {
-				U.MAIN.NewCreative();
-				U.currentMode = GameMode.Creative;
-			} else if (Start_Toggle_Doppler.GetHover() == true) {
-				U.option_Doppler = !U.option_Doppler;
-			} else if (Start_Toggle_LengthCon.GetHover() == true) {
-				U.option_Length = !U.option_Length;
-			} else if (Start_Toggle_TimeCon.GetHover() == true) {
-				U.option_Time = !U.option_Time;
-			} else if (Start_Toggle_Toroid.GetHover() == true) {
-				U.option_Torus = !U.option_Torus;
-			}
-		} else if (U.currentMode == GameMode.Creative) {
-			if (CreativeShowLight.GetHover() == true) {
-				U.show_light_cones = !U.show_light_cones;
-			} else if (CreativeShowTrue.GetHover() == true) {
-				U.show_all_locations = !U.show_all_locations;
-			} else if (CreativeAsteroidV_Plus.GetHover() == true) {
-				U.velocity += 0.05f;
-				//if (U.velocity > 1.25f) U.velocity = 1.25f;
-			} else if (CreativeAsteroidV_Minus.GetHover() == true) {
-				U.velocity -= 0.05;
-				//if (U.velocity < 0.f) U.velocity = 0f;
-			} else if (CreativeC_Plus.GetHover() == true) {
-				U.c_pixel += 0.05f;
-				//if (U.c_pixel > 1f) U.c_pixel = 1f;
-			} else if (CreativeC_Minus.GetHover() == true) {
-				U.c_pixel -= 0.05;
-				//if (U.c_pixel < 0.2f) U.c_pixel = 0.2f;
-			} else if (CreativeAsteroids_Plus.GetHover() == true) {
-				synchronized (U.list_of_rectangles_sync) {
-					U.list_of_rectangles_sync.add( new Rectangle(
-							(int) (U.R.nextFloat()*(U.world_x_pixels - 10) - U.world_x_pixels2),
-							(int) (U.R.nextFloat()*(U.world_y_pixels - 10 - U.UI) - U.world_y_pixels2 + U.UI), 
-							7+U.R.nextInt(5)-2,
-							1f) );
-				}
-			} else if (CreativeAsteroids_Minus.GetHover() == true) {
-				synchronized (U.list_of_rectangles_sync) {
-					U.list_of_rectangles.pollLast();
-				}
-			}
-		} else if (U.currentMode == GameMode.GameOver) {
-			if (NewGame.GetHover() == true) {
-				U.MAIN.NewGame();
-				U.currentMode = GameMode.GameOn;
-			}
 		}
 	}
 
