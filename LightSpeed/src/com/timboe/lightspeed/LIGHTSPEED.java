@@ -19,24 +19,15 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	 * 
 	 */
 	private static final long serialVersionUID = 5213789766366330870L;
-	//float TIME_OF_FRAME = 0;
-	long _TIME_OF_LAST_FRAME = 0;
-	//int FPS_LAST_SECOND = 0;
-	//float TIME_TO_RENDER = 0;
+	long _TIME_OF_LAST_FRAME = 0; //Internal
 	long _FPS = 0;
-	//int FRAMES=0;
-	//int FRAMES_LAST_SECOND=0;
-	//int SLEEP = 30;
-	
-	//int _DESIRED_FPS = 30;
-	int _TICKS_PER_RENDER = 10;
-	long _TIME_OF_NEXT_TICK;
-	//long _TIME_OF_LAST_SECOND;
-	//int _FRAMES_LAST_SECOND;
-	//int _FRAMES_CUR_SECOND;
-	//int _TICKS_CUR_SEC;
-	//int _TICKS_LAST_SEC;
-	int _TICK;
+	int _DO_FPS_EVERY_X_FRAMES = 10; //refresh FPS after how many frames
+	long _TIME_OF_NEXT_TICK; //Internal
+	int _TICK; //Counter
+	int _FRAME; //Counter
+	int _DESIRED_TPS = 300; //Ticks per second to aim for
+	int _TICKS_PER_RENDER = 10; //Render every X ticks
+
 
 	private Image dbImage;
 	private Graphics dbg;
@@ -398,7 +389,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		}
 		return false;
 	}
-
 	
 	@Override
 	public void run() {
@@ -414,14 +404,17 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 					e.printStackTrace();
 				}
 			}
-			_TIME_OF_NEXT_TICK = System.currentTimeMillis() + Math.round(1000f/300f);
+			_TIME_OF_NEXT_TICK = System.currentTimeMillis() + Math.round(1000f/(float)_DESIRED_TPS);
 
 			++_TICK;
 			if (U.currentMode == GameMode.GameOn || U.currentMode == GameMode.Creative) Tick();
 
 			if (_TICK % _TICKS_PER_RENDER == 0) {
-				_FPS =  Math.round(1./(System.currentTimeMillis() - _TIME_OF_LAST_FRAME)*1000.);
-				_TIME_OF_LAST_FRAME = System.currentTimeMillis();
+				++_FRAME;
+				if (_FRAME % _DO_FPS_EVERY_X_FRAMES == 0) {
+					_FPS =  Math.round(1./(System.currentTimeMillis() - _TIME_OF_LAST_FRAME)*1000.*(double)_DO_FPS_EVERY_X_FRAMES);
+					_TIME_OF_LAST_FRAME = System.currentTimeMillis();
+				}
 				repaint();
 			}
 //			++_TICKS_CUR_SEC;
@@ -479,14 +472,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-//		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-//			U.show_light_cones = !U.show_light_cones;
-//			System.out.println("Debug="+U.show_light_cones);
-//		}
-//		if (e.getKeyChar() == 'c' || e.getKeyChar() == 'C') {
-//			U.show_all_locations = !U.show_all_locations;
-//			System.out.println("show_all_locations="+U.show_all_locations);
-//		}
 		if (e.getKeyChar() == 'w' || e.getKeyChar() == 'W' || e.getKeyCode() == KeyEvent.VK_UP) N = true;
 		if (e.getKeyChar() == 'd' || e.getKeyChar() == 'D' || e.getKeyCode() == KeyEvent.VK_RIGHT) E = true;
 		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S' || e.getKeyCode() == KeyEvent.VK_DOWN) S = true;
