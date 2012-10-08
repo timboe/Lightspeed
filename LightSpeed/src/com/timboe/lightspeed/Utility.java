@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public final class Utility {
+	private static final Utility singleton = new Utility();
+
 	public final Random R = new Random(); //All randoms come from this object
 	
     AffineTransform af_none = null;
@@ -18,7 +20,6 @@ public final class Utility {
 	//world parameters
 	final int world_x_pixels = 1000;
 	final int world_y_pixels = 600;
-
 	final int world_x_pixels2 = world_x_pixels/2;
 	final int world_y_pixels2 = world_y_pixels/2;
 	
@@ -28,32 +29,26 @@ public final class Utility {
 	final float player_acceleration = 0.005f;
 	
 	public float max_radius = 1160f;
-	
-	
+		
 	public float velocity = 1f;
-	
-	//public final float c_cell = 0.1f;
 	public float c_pixel = 1f;
 	
-	final public int granularity = 20;
+	final public int granularity = 12;
 	
 	public int GID = 0;
 	
 	public int twinkle_speed = 5;
-	public float twinkle_prob = 0.0001f;
+	public float twinkle_prob = 0.001f;
 	public int twinkle_stars = 500;
 	
-	private static final Utility singleton = new Utility();
 	
 	public float doppler_range = 1.0f; //Gamma range -x to +x to map Blue to Red colour 
 	
 	LinkedList<Rectangle> list_of_rectangles = new LinkedList<Rectangle>();
 	LinkedList<BackgroundStar> list_of_stars = new LinkedList<BackgroundStar>();
 	LinkedList<Debris> list_of_debris = new LinkedList<Debris>();
-	
 	Collection<Debris> list_of_debris_sync = Collections.synchronizedCollection(list_of_debris);
 	Collection<Rectangle> list_of_rectangles_sync = Collections.synchronizedCollection(list_of_rectangles);
-
 	
 	int titleCascade = 1;
 	
@@ -65,8 +60,9 @@ public final class Utility {
 	public float gamma_range = 1f; //small, not much distoprtion.  big, lots of distortion
 	public float gamma_suppression = 0.1f; //speed of distortion
 	
-	public float time_dilation_X = 1;
-	public float time_dilation_Y = 1;
+//	public float time_dilation_X = 1;
+//	public float time_dilation_Y = 1;
+//	public int time_dilation = 1000;
 	
 	public int shellTime = 0;
 	
@@ -76,7 +72,7 @@ public final class Utility {
 	boolean show_all_locations = false;
 
 	//boolean GameOn = true;
-	GameMode currentMode = GameMode.Title;
+	GameMode currentMode = GameMode.GameOn;
 	int Level = 1;
 	int TicksPerLevel = 500;
 	int Lives = 0;
@@ -88,12 +84,18 @@ public final class Utility {
 	
 	//mouse location
 	public Point CurMouse;
+	int ticks_with_mouse_down;
+	boolean mouseClick = false;
+	boolean mouseDrag = false;
+
 	
 	boolean option_Doppler = true;
 	boolean option_Length = true;
-	boolean option_Time = true;
+	boolean option_Time = false;
 	
 	public Color default_colour = new Color(128,0,128);
+	
+	int highScore=0;
 	
 	private Utility() {
 		

@@ -1,11 +1,15 @@
 package com.timboe.lightspeed;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 
 public class ButtonManager {
 	private Utility U = Utility.GetUtility();
 	private static final ButtonManager singleton = new ButtonManager();
 	
+    Font display_font = new Font(Font.MONOSPACED, Font.BOLD, 20);
+	    
 	DisplayButton PlayingC;
 	DisplayButton PlayingAsteroidSpeed;
 	DisplayButton PlayingScore;
@@ -30,7 +34,8 @@ public class ButtonManager {
 	DisplayButton CreativeShowTrue;
 	DisplayButton CreativeShowLight;
 	
-
+    DisplayButton NewGame;
+	
 	DisplayButton Quit;
 	
 	private ButtonManager() {
@@ -38,7 +43,9 @@ public class ButtonManager {
 		int b3x = b2x + 320;
 		int b4x = b3x + 175;
 		Quit = new DisplayButton(0, 0, b2x, U.UI, "Quit","", true);
-		Quit.text_y *= 1.5;
+		//Quit.text_y *= 1.5;
+		//End of game
+		NewGame = new DisplayButton(800, 0, 200, U.UI, "New Game", "", true);
 		//Playing game
 		PlayingC             = new DisplayButton(b2x, 0,      b3x-b2x, U.UI/2, "Speed of Light: ","", false);
 		PlayingAsteroidSpeed = new DisplayButton(b2x, U.UI/2, b3x-b2x, U.UI/2, "Max Asteroid Speed: ","c", false);
@@ -60,14 +67,14 @@ public class ButtonManager {
 		Start_Toggle_TimeCon.isYesNo = true;
 		//creative mode
 		CreativeAsteroids       = new DisplayButton(b2x,            0,      220,    U.UI/2, "Asteroids:", "", false);
-		CreativeAsteroids_Plus  = new DisplayButton(b2x+220,        0,      U.UI/2, U.UI/2, "+", "", true);
-		CreativeAsteroids_Minus = new DisplayButton(b2x+220+U.UI/2, 0,      U.UI/2, U.UI/2, "-", "", true);
+		CreativeAsteroids_Minus = new DisplayButton(b2x+220,        0,      U.UI/2, U.UI/2, "-", "", true);
+		CreativeAsteroids_Plus  = new DisplayButton(b2x+220+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
 		CreativeAsteroidV       = new DisplayButton(b2x,            U.UI/2, 220,    U.UI/2, "Asteroid V:", "", false);
-		CreativeAsteroidV_Plus  = new DisplayButton(b2x+220,        U.UI/2, U.UI/2, U.UI/2, "+", "", true);
-		CreativeAsteroidV_Minus = new DisplayButton(b2x+220+U.UI/2, U.UI/2, U.UI/2, U.UI/2, "-", "", true);
+		CreativeAsteroidV_Minus = new DisplayButton(b2x+220,        U.UI/2, U.UI/2, U.UI/2, "-", "", true);
+		CreativeAsteroidV_Plus  = new DisplayButton(b2x+220+U.UI/2, U.UI/2, U.UI/2, U.UI/2, "+", "", true);
 		CreativeC               = new DisplayButton(350,            0,      260,    U.UI/2, "Speed of Light:", "", false);
-		CreativeC_Plus          = new DisplayButton(350+260,        0,      U.UI/2, U.UI/2, "+", "", true);
-		CreativeC_Minus         = new DisplayButton(350+260+U.UI/2, 0,      U.UI/2, U.UI/2, "-", "", true);
+		CreativeC_Minus         = new DisplayButton(350+260,        0,      U.UI/2, U.UI/2, "-", "", true);
+		CreativeC_Plus          = new DisplayButton(350+260+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
 		CreativeShowTrue        = new DisplayButton(670,            0,      175,    U.UI,   "True Position", "", true);
 		CreativeShowLight       = new DisplayButton(670+175,        0,      155,    U.UI,   "Light Cones", "", true);
 		CreativeAsteroids.precision = false;
@@ -80,6 +87,20 @@ public class ButtonManager {
 	}
 	
 	public void Render(Graphics2D _g2) {
+		_g2.setFont(display_font);
+		_g2.setColor(Color.black);
+		_g2.fillRect(0, 0, U.world_x_pixels, U.UI);
+		if (U.currentMode == GameMode.GameOver) {
+			NewGame.Render(_g2);
+			_g2.setColor(Color.white);
+			if (PlayingScore.GetValue() > U.highScore) {
+				U.highScore = (int) PlayingScore.GetValue();
+				_g2.drawString("New High Score!", 590, (U.UI/2)+8);
+			} else {
+				_g2.drawString((int)(U.highScore - PlayingScore.GetValue()) + " Points From", 590, (U.UI/2)-3);
+				_g2.drawString("A High Score.", 610, (U.UI/2)+17);
+			}
+		}
 		if (U.currentMode == GameMode.GameOn || U.currentMode == GameMode.GameOver) {
 			Quit.Render(_g2);
 			PlayingC.SetValue(U.c_pixel);
@@ -118,6 +139,9 @@ public class ButtonManager {
 			CreativeShowTrue.Render(_g2);
 			CreativeShowLight.Render(_g2);
 		}
+		//Do FPS
+		_g2.setColor(Color.white);
+		_g2.drawString("FPS: "+U.MAIN._FPS, 900, 590);
 		
 	}
 	
@@ -175,12 +199,17 @@ public class ButtonManager {
 							(int) (U.R.nextFloat()*(U.world_x_pixels - 10) - U.world_x_pixels2),
 							(int) (U.R.nextFloat()*(U.world_y_pixels - 10 - U.UI) - U.world_y_pixels2 + U.UI), 
 							7+U.R.nextInt(5)-2,
-							U.velocity) );
+							1f) );
 				}
 			} else if (CreativeAsteroids_Minus.GetHover() == true) {
 				synchronized (U.list_of_rectangles_sync) {
 					U.list_of_rectangles.pollLast();
 				}
+			}
+		} else if (U.currentMode == GameMode.GameOver) {
+			if (NewGame.GetHover() == true) {
+				U.MAIN.NewGame();
+				U.currentMode = GameMode.GameOn;
 			}
 		}
 	}

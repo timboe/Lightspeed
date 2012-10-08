@@ -1,6 +1,5 @@
 package com.timboe.lightspeed;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +54,7 @@ public class PhotonManager {
 				if (sep < U.granularity/2 && sep > -U.granularity/2) {
 					toDraw.add( _p );
 					_p.SetSeen();
-				} else if (_p.GetSeen() == true) {
+				} else if (U.currentMode == GameMode.GameOn && _p.GetSeen() == true) {
 					_p.Kill();
 				}
 			} 
@@ -95,12 +94,10 @@ public class PhotonManager {
 	void RenderShells(Graphics2D _g2) {
 		synchronized (list_of_shells_sync) {
 			for (PhotonShell _p : list_of_shells_sync) {
-				//if (_p.GID == 49) {
-					//float c = 1-(_p.radius/U.max_radius);
-					_g2.setColor(Color.white);
-					if (_p.G2ID%10 == 0) _g2.setColor(Color.gray);
-					_g2.drawOval((int)(_p.x - _p.GetRadius()),(int) (_p.y - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
-				//}
+				//float c = 1-(_p.radius/U.max_radius);
+				_g2.setColor(_p.shell_color);
+				//if (_p.G2ID%10 == 0) _g2.setColor(Color.gray);
+				_g2.drawOval((int)(_p.x - _p.GetRadius()),(int) (_p.y - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
 			}
 		}
 	}

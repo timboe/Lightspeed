@@ -27,14 +27,8 @@ public class Rectangle extends DopplerObject {
 
 	
 	void Walk() {
-		float dial_X = U.time_dilation_X;
-		float dial_Y = U.time_dilation_Y;
-		if (Math.hypot(vx, vy) > U.c_pixel) {
-			dial_X = 1f;
-			dial_Y = 1f;
-		}
-		vx = (float) (speed * Math.cos(a) * U.velocity * dial_X);
-		vy = (float) (speed * Math.sin(a) * U.velocity * dial_Y);
+		vx = (float) (speed * Math.cos(a) * U.velocity);
+		vy = (float) (speed * Math.sin(a) * U.velocity);
 		x += vx;
 		y += vy;
 		dist_to_tick += U.velocity + U.c_pixel;

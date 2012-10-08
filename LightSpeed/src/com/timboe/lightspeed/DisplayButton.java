@@ -51,6 +51,10 @@ public class DisplayButton {
 		SetValue(var + _var);
 	}
 	
+	public float GetValue() {
+		return var;
+	}
+	
 	public void SetClickable(boolean _c) {
 		Clickable = _c;
 	}

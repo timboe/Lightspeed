@@ -25,7 +25,7 @@ public class PlayerShip {
 	public PlayerShip(int _x, int _y) {
 		x = _x + U.world_x_pixels2;
 		y = _y + U.world_y_pixels2;
-		a=(float) (Math.PI/2.);
+		a= 0;//(float) (Math.PI/2.);
 		
 		ship = new ShipGraphic(1);
 	}
@@ -66,18 +66,18 @@ public class PlayerShip {
 	void Constrain() {
 		if (x < (0 - U.world_x_pixels2) ) {
 			vx = Math.abs(vx);
-			a = (float) (+Math.PI - a);
+			a = (float) (+Math.PI - GetHeading());
 		} else if (x + (2*r) >= U.world_x_pixels2) {
 			vx = -(Math.abs(vx));
-			a = (float) (-Math.PI - a);
+			a = (float) (-Math.PI - GetHeading());
 		}
 		
 		if (y < (0 - U.world_y_pixels2 + U.UI) ) {
 			vy = Math.abs(vy);
-			a = (float) (2*Math.PI - a);
+			a = (float) (2*Math.PI - GetHeading());
 		} else if (y + (2*r) >= U.world_y_pixels2) {
 			vy = -(Math.abs(vy));
-			a = (float) (-2*Math.PI - a);
+			a = (float) (-2*Math.PI - GetHeading());
 		}
 		
 		float speed = (float) Math.hypot(vx, vy);
@@ -87,16 +87,27 @@ public class PlayerShip {
 		}
 	}
 	
-	public float GetGamma(int dir) {
-		//float velocity = (float) Math.hypot(vx, vy);
-		float gamma;
-		if (dir > 0) {
-			gamma = (float) Math.abs(vx / ( 1. - ((vx*vx)/(U.c_pixel*U.c_pixel)) ));
-		} else {
-			gamma = (float) Math.abs(vy / ( 1. - ((vy*vy)/(U.c_pixel*U.c_pixel)) ));
-		}
-		if (gamma > U.gamma_range) gamma = U.gamma_range;
-		return 1 - (gamma * U.gamma_suppression);
+	public double GetGamma() {
+		double velocity = (float) Math.hypot(vx, vy);
+		double gamma = (float) Math.abs(1. / ( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
+		//gamma = 1 - (gamma * U.gamma_suppression);
+		//System.out.println("Debug gamma: "+gamma); 
+		return gamma;
+	}
+	
+	public double GetGameGamma() {
+		//It's Relativistic gamma which is mapped to effect magnitude
+		double gamma = GetGamma();
+		//if (gamma <= 1.000001f) return 1f;
+		if (gamma > 1000f) gamma = 1000f;
+		gamma /= 10000f;
+		gamma = 1f - gamma;
+		System.out.println("Debug game gamma: "+gamma); 
+		return 1f - gamma;
+	}
+	
+	public float GetHeading() {
+		return (float) Math.atan2(0-vx,0-vy);
 	}
 	
 	
