@@ -43,7 +43,7 @@ public class DopplerObject {
 		final double pl_axis_velocity = Math.hypot(pl_vx_axis, pl_vy_axis);
 
 		//SuperLumi = false;
-		double doppler = (my_axis_velocity-pl_axis_velocity) / ( 1 - ((my_axis_velocity*pl_axis_velocity)/(U.c_pixel*U.c_pixel)) );
+		double doppler = (my_axis_velocity-pl_axis_velocity) / Math.sqrt( 1 - ((my_axis_velocity*pl_axis_velocity)/(U.c_pixel*U.c_pixel)) );
 		//System.out.println("Debug game gamma: "+doppler);
 		
 		if (doInversion == true && (my_vx_axis+my_vy_axis)+(pl_vx_axis+pl_vy_axis) < 0) {
@@ -76,8 +76,8 @@ public class DopplerObject {
 		int fractionRed = (int) (((GetRelativeGamma(true) + U.doppler_range) / (2 * U.doppler_range)) * 255);
 		int fractionBlu = 255 - fractionRed;
 		if (x_offset != (short)0 || y_offset != (short)0) {
-			fractionRed /= 2;
-			fractionBlu /= 2;
+			fractionRed /= 4;
+			fractionBlu /= 4;
 		}
 		shape_color = new Color(fractionRed, 0, fractionBlu);
 	}

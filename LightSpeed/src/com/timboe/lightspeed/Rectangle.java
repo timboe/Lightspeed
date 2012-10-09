@@ -16,6 +16,8 @@ public class Rectangle extends DopplerObject {
 	
 	float dist_to_tick;
 	int GID;
+	
+	Color shell_colour;
 
 	Rectangle(float _x, float _y, int _shape_size, float _speed) {
 		super(_x, _y, 0, 0, (short)0, (short)0);
@@ -23,9 +25,17 @@ public class Rectangle extends DopplerObject {
 		shape_size = _shape_size;
 		shape_size2 = _shape_size/2;
 		shape_color = U.default_colour;
-		a = (float) (Math.PI/2f);//0;//(float) (Math.PI/2f);//(float) (U.R.nextFloat()*Math.PI);
+		a = (float) (U.R.nextFloat()*Math.PI);;//(float) (Math.PI/2f);//0;//(float) (Math.PI/2f);//(float) (U.R.nextFloat()*Math.PI);
 		speed = _speed;
 		GID = ++U.GID;
+		
+		final int R = U.R.nextInt(255);
+		final int G = U.R.nextInt(255);
+		int B = 255 - R - G;
+		if (B < 0) {
+			B = 0;
+		}
+		shell_colour = new Color(R,G,B);
 	}
 
 
@@ -70,7 +80,6 @@ public class Rectangle extends DopplerObject {
 		if (Math.hypot(vx, vy) > U.c_pixel) {
 			shape_color = Color.yellow;
 			DoSuperLumiSpikes(_g2, shape_size2);
-			//SuperLumi = true;
 		}
 		_g2.setColor(shape_color);
 		_g2.drawRoundRect(Math.round(x), Math.round(y), shape_size, shape_size, shape_size2, shape_size2);
@@ -79,12 +88,12 @@ public class Rectangle extends DopplerObject {
 	void Tick(int _tick) {
 		if (dist_to_tick > U.granularity) {
 			dist_to_tick = 0;
-			P.AddShell( new PhotonShell(x, y, vx, vy, (short)0, (short)0, shape_size, GID, false) );
+			P.AddShell( new PhotonShell(x, y, vx, vy, (short)0, (short)0, shape_size, shell_colour, GID, false) );
 			if (U.option_Torus == true) {
-				P.AddShell( new PhotonShell(x, y, vx, vy, (short)(x-U.world_x_pixels), (short)0,                    shape_size, GID, false) );
-				P.AddShell( new PhotonShell(x, y, vx, vy, (short)(x+U.world_x_pixels), (short)0,                    shape_size, GID, false) );
-				P.AddShell( new PhotonShell(x, y, vx, vy, (short)0,                    (short)(y-U.world_y_pixels), shape_size, GID, false) );
-				P.AddShell( new PhotonShell(x, y, vx, vy, (short)0,                    (short)(y+U.world_y_pixels), shape_size, GID, false) );
+				//P.AddShell( new PhotonShell(x, y, vx, vy, (short)(x-U.world_x_pixels), (short)0,                    shape_size, GID, false) );
+				//P.AddShell( new PhotonShell(x, y, vx, vy, (short)(x+U.world_x_pixels), (short)0,                    shape_size, GID, false) );
+				//P.AddShell( new PhotonShell(x, y, vx, vy, (short)0,                    (short)(y-U.world_y_pixels), shape_size, GID, false) );
+				//P.AddShell( new PhotonShell(x, y, vx, vy, (short)0,                    (short)(y+U.world_y_pixels), shape_size, GID, false) );
 			}
 		}
 	}

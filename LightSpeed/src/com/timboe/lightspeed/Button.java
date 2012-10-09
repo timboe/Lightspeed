@@ -3,7 +3,7 @@ package com.timboe.lightspeed;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-public class DisplayButton {
+public class Button {
 	private final Utility U = Utility.GetUtility();
 
 	int x;
@@ -25,7 +25,7 @@ public class DisplayButton {
 	boolean isYesNo = false;
 	private boolean yesNoValue;
 
-	public DisplayButton(int _x, int _y, int _w, int _h, String _d, String _d2, boolean _c) {
+	public Button(int _x, int _y, int _w, int _h, String _d, String _d2, boolean _c) {
 		x = _x;
 		y = _y;
 		w = _w;
@@ -44,8 +44,8 @@ public class DisplayButton {
 	public boolean GetHover() {
 		if (Clickable == false) return false;
 		if (U.CurMouse == null) return false;
-		if (U.CurMouse.x <= x) return false;
-		if (U.CurMouse.x >= x+w) return false;
+		if (U.CurMouse.x <= x+U.world_x_offset) return false;
+		if (U.CurMouse.x >= x+w+U.world_x_offset) return false;
 		if (U.CurMouse.y <= y) return false;
 		if (U.CurMouse.y >= y+h) return false;
 		return true;

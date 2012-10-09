@@ -104,12 +104,29 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		g2.rotate(U.player.GetHeading());
 		g2.scale(1, U.player.GetGameGamma());
 		g2.rotate(-U.player.GetHeading());
+		//g2.scale(0.4,0.4);
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyChar() == 'w' || e.getKeyChar() == 'W' || e.getKeyCode() == KeyEvent.VK_UP) {
+			N = true;
+		}
+		if (e.getKeyChar() == 'd' || e.getKeyChar() == 'D' || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			E = true;
+		}
+		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S' || e.getKeyCode() == KeyEvent.VK_DOWN) {
+			S = true;
+		}
+		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A' || e.getKeyCode() == KeyEvent.VK_LEFT) {
+			W = true;
+		}
 	}
 
 	@Override
 	public void init() {
 
-		setSize(U.world_x_pixels, U.world_y_pixels);
+		setSize(U.world_x_pixels+(2*U.world_x_offset), U.world_y_pixels+(2*U.world_y_offset));
 		U.MAIN = this;
 
 		addMouseMotionListener(this);
@@ -134,23 +151,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 					1f) );
 			U.show_all_locations = true;
 			U.c_pixel = 1f;
-			U.velocity = 0.999f;
-		}
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if (e.getKeyChar() == 'w' || e.getKeyChar() == 'W' || e.getKeyCode() == KeyEvent.VK_UP) {
-			N = true;
-		}
-		if (e.getKeyChar() == 'd' || e.getKeyChar() == 'D' || e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			E = true;
-		}
-		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S' || e.getKeyCode() == KeyEvent.VK_DOWN) {
-			S = true;
-		}
-		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A' || e.getKeyCode() == KeyEvent.VK_LEFT) {
-			W = true;
+			U.velocity = 0.95f;
 		}
 	}
 
@@ -196,12 +197,12 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	public void mousePressed(MouseEvent e) {
 		U.CurMouse = e.getPoint();
 		U.mouseClick=true;
-		U.ticks_with_mouse_down = 0;
+		U.ticks_with_mouse_down = -200;
 	}
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		U.mouseClick=false;
-		if (U.ticks_with_mouse_down < 100) {
+		if (U.ticks_with_mouse_down < 0) {
 			B.ProcessMouseClick();
 		}
 	}
@@ -254,163 +255,145 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		final Graphics2D g2 = (Graphics2D)g;
 		if (U.af_none == null) {
 			U.af_none = g2.getTransform();
+			U.af_none.translate(U.world_x_offset, U.world_y_offset);
 		}
 		g2.setTransform(U.af_none);
+		//Main transform
 
+		//fill black
 		g2.setColor (Color.black);
-		g2.fillRect (0, 0, U.world_x_pixels, U.world_y_pixels);
+		g2.fillRect (-U.world_x_offset, -U.world_y_offset, U.world_x_pixels+(2*U.world_x_offset), U.world_y_pixels+(2*U.world_y_offset));
 
-		if (U.currentMode == GameMode.GameOn || U.currentMode == GameMode.GameOver) {
-			paint_Game(g2);
-		} else if (U.currentMode == GameMode.Title) {
-			paint_Title(g2);
-		} else if (U.currentMode == GameMode.Creative) {
-			paint_Creative(g2);
+		if (U.currentMode == GameMode.Title) {
+			g2.translate(U.world_x_pixels2, U.world_y_pixels2);
+			for (final BackgroundStar _s : U.list_of_stars) {
+				_s.Render(g2);
+			}
+			g2.setTransform(U.af_none);
+
+			if (U.titleCascade <= 256) {
+				for (int x=1; x<=U.titleCascade; x+=5) {
+					if (x > 256) {
+						break;
+					}
+				    g2.setColor(new Color(1-(1f/x),1-(1f/x),1-(1f/x)));
+				    g2.setFont(new Font(Font.MONOSPACED, Font.BOLD, x/3));
+					g2.drawString("LIGHTSPEED", 50+x, 50+x);
+					if (x == U.titleCascade || x == 256) {
+					    g2.setColor(Color.gray);
+						g2.drawString("LIGHTSPEED", 50+x, 50+x);
+						g2.drawString("LIGHTSPEED", 58+x, 58+x);
+					    g2.setColor(Color.white);
+						g2.drawString("LIGHTSPEED", 54+x, 54+x);
+					}
+				}
+			} else if (U.titleCascade <= 512) {
+				for (int x=1; x<=256; x+=5) {
+					if (x < U.titleCascade-256) {
+						continue;
+					} else {
+						g2.setColor(Color.white);
+					}
+				    g2.setFont(new Font(Font.MONOSPACED, Font.BOLD, x/3));
+					g2.drawString("LIGHTSPEED", 50+x, 50+x);
+					if (x == 256) {
+					    g2.setColor(Color.gray);
+						g2.drawString("LIGHTSPEED", 50+x, 50+x);
+						g2.drawString("LIGHTSPEED", 58+x, 58+x);
+					    g2.setColor(Color.white);
+						g2.drawString("LIGHTSPEED", 54+x, 54+x);
+					}
+				}
+			} else {
+			    g2.setFont(new Font(Font.MONOSPACED, Font.BOLD, 256/3));
+			    g2.setColor(Color.gray);
+				g2.drawString("LIGHTSPEED", 50+256, 50+256);
+				g2.drawString("LIGHTSPEED", 58+256, 58+256);
+			    g2.setColor(Color.white);
+				g2.drawString("LIGHTSPEED", 54+256, 54+256);
+			}
+			U.titleCascade += 5;
+		} else { //CREATIVE, GAME ON, GAME OVER
+			g2.translate(U.world_x_pixels2, U.world_y_pixels2);
+
+			if (U.option_Length == true) {
+				doLengthContractionTransform(g2);
+			}
+
+			g2.setColor(Color.white);
+			g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI, U.world_x_pixels, U.world_y_pixels - U.UI);
+
+			for (final BackgroundStar _s : U.list_of_stars) {
+				_s.Render(g2);
+			}
+
+			//draw what player sees
+			P.RenderFromLocation(g2,Math.round(U.player.x),Math.round(U.player.y));
+
+			//If drawing everything
+			if (U.show_all_locations == true) {
+				synchronized (U.list_of_rectangles_sync) {
+					for (final Rectangle _r : U.list_of_rectangles) {
+						_r.RenderReal(g2);
+					}
+				}
+				synchronized (U.list_of_debris_sync) {
+					for (final Debris _d : U.list_of_debris_sync) {
+						_d.RenderReal(g2);
+					}
+				}
+			}
+			if (U.show_light_cones == true) {
+				P.RenderShells(g2);
+			}
+
+			U.player.Render(g2); //Draw players ship
+
+			//Always want collision check to run, only act on it if game is running
+			if (CollisionCheck() == true && U.currentMode == GameMode.GameOn) { 
+				U.currentMode = GameMode.GameOver;
+				U.show_all_locations = true;
+			}
+			
+			//Blackout
+			g2.setColor(Color.black);
+			g2.fillRect(0 - U.world_x_pixels2 - 5*U.world_x_offset,
+					0 - U.world_y_pixels2 - 5*U.world_y_offset,
+					U.world_x_offset*5,
+					U.world_y_pixels + 10*U.world_y_offset);
+			g2.fillRect(0 + U.world_x_pixels2,
+					0 - U.world_y_pixels2 - 5*U.world_y_offset,
+					U.world_x_offset*5,
+					U.world_y_pixels + 10*U.world_y_offset);
+			g2.fillRect(0 - U.world_x_pixels2 - 5*U.world_x_offset,
+					0 - U.world_y_pixels2 - 5*U.world_y_offset,
+					U.world_x_pixels + 10*U.world_x_offset,
+					U.world_y_offset*7);
+			g2.fillRect(0 - U.world_x_pixels2 - 5*U.world_x_offset,
+					0 + U.world_y_pixels2,
+					U.world_x_pixels + 10*U.world_x_offset,
+					U.world_y_offset*7);
+			
+			//Outer box
+			g2.setColor(Color.white);
+			g2.drawRect(0 - U.world_x_pixels2,
+					0 - U.world_y_pixels2 + U.UI,
+					U.world_x_pixels,
+					U.world_y_pixels - U.UI);
+//			g2.drawRect(0 - U.world_x_pixels2,
+//				0 - U.world_y_pixels2 - U.world_y_pixels + U.UI ,
+//				U.world_x_pixels,
+//				U.world_y_pixels + U.world_y_pixels + U.world_y_pixels - U.UI);
+//			g2.drawRect(0 - U.world_x_pixels2 - U.world_x_pixels,
+//				0 - U.world_y_pixels2 + U.UI,
+//				U.world_x_pixels + U.world_x_pixels + U.world_x_pixels,
+//				U.world_y_pixels - U.UI);
+			
 		}
-
+		
 		g2.setTransform(U.af_none);
+		g2.translate(0, -U.world_y_offset);
 		B.Render(g2); //Do buttons
-
-	}
-	public void paint_Creative(Graphics2D g2) {
-		g2.translate(U.world_x_pixels2, U.world_y_pixels2);
-
-		if (U.option_Length == true) {
-			doLengthContractionTransform(g2);
-		}
-
-		g2.setColor(Color.white);
-		g2.drawRect(0 - U.world_x_pixels2,
-				0 - U.world_y_pixels2 + U.UI,
-				U.world_x_pixels,
-				U.world_y_pixels - U.UI);
-		g2.drawRect(0 - U.world_x_pixels2,
-				0 - U.world_y_pixels2 - U.world_y_pixels + U.UI ,
-				U.world_x_pixels,
-				U.world_y_pixels + U.world_y_pixels + U.world_y_pixels - U.UI);
-		g2.drawRect(0 - U.world_x_pixels2 - U.world_x_pixels,
-				0 - U.world_y_pixels2 + U.UI,
-				U.world_x_pixels + U.world_x_pixels + U.world_x_pixels,
-				U.world_y_pixels - U.UI);
-
-		for (final BackgroundStar _s : U.list_of_stars) {
-			_s.Render(g2);
-		}
-
-		if (U.show_light_cones == true) {
-			P.RenderShells(g2);
-		}
-
-		if (U.show_all_locations == true) {
-			synchronized (U.list_of_rectangles_sync) {
-				for (final Rectangle _r : U.list_of_rectangles) {
-					_r.RenderReal(g2);
-				}
-			}
-			synchronized (U.list_of_debris_sync) {
-				for (final Debris _d : U.list_of_debris_sync) {
-					_d.RenderReal(g2);
-				}
-			}
-		}
-
-		//draw what player sees
-		P.RenderFromLocation(g2,Math.round(U.player.x),Math.round(U.player.y));
-
-		U.player.Render(g2);
-
-		CollisionCheck();
-	}
-
-	public void paint_Game(Graphics2D g2) {
-
-		g2.translate(U.world_x_pixels2, U.world_y_pixels2);
-
-		if (U.option_Length == true) {
-			doLengthContractionTransform(g2);
-		}
-
-		g2.setColor(Color.white);
-		g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI, U.world_x_pixels, U.world_y_pixels - U.UI);
-
-		for (final BackgroundStar _s : U.list_of_stars) {
-			_s.Render(g2);
-		}
-
-		//draw what player sees
-		P.RenderFromLocation(g2,Math.round(U.player.x),Math.round(U.player.y));
-
-		if (U.show_all_locations == true) {
-			synchronized (U.list_of_rectangles_sync) {
-				for (final Rectangle _r : U.list_of_rectangles) {
-					_r.RenderReal(g2);
-				}
-			}
-			synchronized (U.list_of_debris_sync) {
-				for (final Debris _d : U.list_of_debris_sync) {
-					_d.RenderReal(g2);
-				}
-			}
-		}
-
-		U.player.Render(g2);
-
-		if (U.currentMode == GameMode.GameOn && CollisionCheck() == true) { //true for no lives left
-			U.currentMode = GameMode.GameOver;
-			U.show_all_locations = true;
-		}
-	}
-
-	public void paint_Title(Graphics2D g2) {
-		g2.translate(U.world_x_pixels2, U.world_y_pixels2);
-		for (final BackgroundStar _s : U.list_of_stars) {
-			_s.Render(g2);
-		}
-		g2.setTransform(U.af_none);
-
-		if (U.titleCascade <= 256) {
-			for (int x=1; x<=U.titleCascade; x+=5) {
-				if (x > 256) {
-					break;
-				}
-			    g2.setColor(new Color(1-(1f/x),1-(1f/x),1-(1f/x)));
-			    g2.setFont(new Font(Font.MONOSPACED, Font.BOLD, x/3));
-				g2.drawString("LIGHTSPEED", 50+x, 50+x);
-				if (x == U.titleCascade || x == 256) {
-				    g2.setColor(Color.gray);
-					g2.drawString("LIGHTSPEED", 50+x, 50+x);
-					g2.drawString("LIGHTSPEED", 58+x, 58+x);
-				    g2.setColor(Color.white);
-					g2.drawString("LIGHTSPEED", 54+x, 54+x);
-				}
-			}
-		} else if (U.titleCascade <= 512) {
-			for (int x=1; x<=256; x+=5) {
-				if (x < U.titleCascade-256) {
-					continue;
-				} else {
-					g2.setColor(Color.white);
-				}
-			    g2.setFont(new Font(Font.MONOSPACED, Font.BOLD, x/3));
-				g2.drawString("LIGHTSPEED", 50+x, 50+x);
-				if (x == 256) {
-				    g2.setColor(Color.gray);
-					g2.drawString("LIGHTSPEED", 50+x, 50+x);
-					g2.drawString("LIGHTSPEED", 58+x, 58+x);
-				    g2.setColor(Color.white);
-					g2.drawString("LIGHTSPEED", 54+x, 54+x);
-				}
-			}
-		} else {
-		    g2.setFont(new Font(Font.MONOSPACED, Font.BOLD, 256/3));
-		    g2.setColor(Color.gray);
-			g2.drawString("LIGHTSPEED", 50+256, 50+256);
-			g2.drawString("LIGHTSPEED", 58+256, 58+256);
-		    g2.setColor(Color.white);
-			g2.drawString("LIGHTSPEED", 54+256, 54+256);
-		}
-		U.titleCascade += 5;
-
 	}
 
 	@Override
@@ -442,16 +425,6 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 				}
 				repaint();
 			}
-//			++_TICKS_CUR_SEC;
-
-//			if (System.currentTimeMillis() > _TIME_OF_LAST_SECOND + 1000) {
-//				_TIME_OF_LAST_SECOND = System.currentTimeMillis();
-//				_FRAMES_LAST_SECOND = _FRAMES_CUR_SECOND;
-//				_FRAMES_CUR_SECOND = 0;
-//				_TICKS_LAST_SEC = _TICKS_CUR_SEC;
-//				_TICKS_CUR_SEC = 0;
-//			}
-
 			Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		}
 	}
@@ -466,7 +439,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 	public void stop() { }
 	void Tick(){
 		if (U.mouseClick == true) {
-			if (++U.ticks_with_mouse_down%100 == 0) {
+			if (++U.ticks_with_mouse_down > 0 && U.ticks_with_mouse_down % 50 == 0) {
 				B.ProcessMouseClick();
 			}
 		}

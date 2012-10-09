@@ -85,7 +85,6 @@ public class SpriteShip {
 
 		}
 
-
 		//check if need to change dir^n
 		if (y - r < 0) { //off top
 			vel_y = Math.abs(vel_y);

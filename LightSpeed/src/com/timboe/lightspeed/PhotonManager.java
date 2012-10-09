@@ -58,7 +58,9 @@ public class PhotonManager {
 				if (sep < U.granularity/2 && sep > -U.granularity/2) {
 					toDraw.add( _p );
 					_p.SetSeen();
-				} else if (U.currentMode == GameMode.GameOn && _p.GetSeen() == true) {
+				} else if (U.currentMode == GameMode.GameOn
+						&& U.option_Torus == false 
+						&& _p.GetSeen() == true) {
 					_p.Kill();
 				}
 			}
@@ -85,6 +87,9 @@ public class PhotonManager {
 
 		for (final PhotonShell _p : toDraw) {
 			_p.Render(_g2);
+			if (U.show_all_locations == true) {
+				_p.RenderLink(_g2);
+			}
 		}
 
 	}
@@ -92,10 +97,7 @@ public class PhotonManager {
 	void RenderShells(Graphics2D _g2) {
 		synchronized (list_of_shells_sync) {
 			for (final PhotonShell _p : list_of_shells_sync) {
-				//float c = 1-(_p.radius/U.max_radius);
-				_g2.setColor(_p.shell_color);
-				//if (_p.G2ID%10 == 0) _g2.setColor(Color.gray);
-				_g2.drawOval((int)(_p.x - _p.x_offset - _p.GetRadius()),(int) (_p.y - _p.y_offset - _p.GetRadius()),(int) (2*_p.GetRadius()),(int) (2*_p.GetRadius()));
+				_p.RenderShell(_g2);
 			}
 		}
 	}

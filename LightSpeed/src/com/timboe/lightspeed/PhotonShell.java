@@ -19,7 +19,7 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 
 	Color shell_color;
 
-	PhotonShell(float _x, float _y, float _vx, float _vy, short _xo, short _yo, int _shape_size, int _GID, boolean _isDebris) {
+	PhotonShell(float _x, float _y, float _vx, float _vy, short _xo, short _yo, int _shape_size, Color _sc, int _GID, boolean _isDebris) {
 		super(_x, _y, _vx, _vy, _xo, _yo);
 
 		pixel_size = _shape_size;
@@ -31,13 +31,13 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 		createTime = U.shellTime;
 		isDebris = _isDebris;
 
-		final int R = U.R.nextInt(255);
-		final int G = U.R.nextInt(255);
-		int B = 255 - R - G;
-		if (B < 0) {
-			B = 0;
-		}
-		shell_color = new Color(R,G,B);
+//		final int R = U.R.nextInt(255);
+//		final int G = U.R.nextInt(255);
+//		int B = 255 - R - G;
+//		if (B < 0) {
+//			B = 0;
+//		}
+		shell_color = _sc;
 	}
 
 	@Override
@@ -51,9 +51,7 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 
 	float GetRadius(){
 		radius = ((U.shellTime - createTime) * U.c_pixel);
-		if (U.option_Torus == true && radius > U.max_radius_toroid) {
-			Kill();
-		} else if (U.option_Torus == false && radius > U.max_radius) {
+		if (U.option_Torus == false && radius > U.max_radius) {
 			Kill();
 		}
 		return radius;
@@ -100,7 +98,6 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 		if (Math.hypot(vx, vy) > U.c_pixel) {
 			shape_color = Color.yellow;
 			DoSuperLumiSpikes(_g2, pixel_size2);
-			//SuperLumi = true;
 		}
 		_g2.setColor(shape_color);
 		_g2.fillRoundRect(Math.round(x+x_offset),
@@ -109,21 +106,24 @@ public class PhotonShell extends DopplerObject implements Comparable<PhotonShell
 				pixel_size,
 				pixel_size2,
 				pixel_size2);
-
-
-		if (U.show_all_locations == true) {
-			synchronized (U.list_of_rectangles_sync) {
-				for (final Rectangle R : U.list_of_rectangles_sync) {
-					if (R.GID == GID) {
-						_g2.drawLine((int)(x+x_offset+pixel_size2),
-								(int)(y+y_offset+pixel_size2),
-								(int)(R.x+pixel_size2),
-								(int)(R.y+pixel_size2));
-						break;
-					}
-				}
+	}
+	
+	public void RenderLink(Graphics2D _g2) {
+		for (final Rectangle R : U.list_of_rectangles_sync) {
+			if (R.GID == GID) {
+				_g2.drawLine((int)(x+x_offset+pixel_size2),
+						(int)(y+y_offset+pixel_size2),
+						(int)(R.x+pixel_size2),
+						(int)(R.y+pixel_size2));
+				break;
 			}
 		}
+	}
+	
+	public void RenderShell(Graphics2D _g2) {
+		_g2.setColor(shell_color);
+		_g2.drawOval((int)(x - x_offset - GetRadius()),(int) (y - y_offset - GetRadius()),(int) (2*GetRadius()),(int) (2*GetRadius()));
+
 	}
 
 	public void SetSeen() {

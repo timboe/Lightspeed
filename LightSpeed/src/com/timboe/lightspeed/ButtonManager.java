@@ -13,77 +13,77 @@ public class ButtonManager {
     private static final ButtonManager singleton = new ButtonManager();
 
 	Font display_font = new Font(Font.MONOSPACED, Font.BOLD, 20);
-	DisplayButton PlayingC;
-	DisplayButton PlayingAsteroidSpeed;
-	DisplayButton PlayingScore;
-	DisplayButton PlayingLevel;
+	Button PlayingC;
+	Button PlayingAsteroidSpeed;
+	Button PlayingScore;
+	Button PlayingLevel;
 
 	ShipGraphic LivesShip;
-	DisplayButton StartArcade;
-	DisplayButton StartCreative;
-	DisplayButton Start_Toggle_Doppler;
-	DisplayButton Start_Toggle_LengthCon;
-	DisplayButton Start_Toggle_TimeCon;
+	Button StartArcade;
+	Button StartCreative;
+	Button Start_Toggle_Doppler;
+	Button Start_Toggle_LengthCon;
+	Button Start_Toggle_TimeCon;
 
-	DisplayButton Start_Toggle_Toroid;
-	DisplayButton CreativeC;
-	DisplayButton CreativeC_Plus;
-	DisplayButton CreativeC_Minus;
-	DisplayButton CreativeAsteroids;
-	DisplayButton CreativeAsteroids_Plus;
-	DisplayButton CreativeAsteroids_Minus;
-	DisplayButton CreativeAsteroidV;
-	DisplayButton CreativeAsteroidV_Plus;
-	DisplayButton CreativeAsteroidV_Minus;
-	DisplayButton CreativeShowTrue;
+	Button Start_Toggle_Toroid;
+	Button CreativeC;
+	Button CreativeC_Plus;
+	Button CreativeC_Minus;
+	Button CreativeAsteroids;
+	Button CreativeAsteroids_Plus;
+	Button CreativeAsteroids_Minus;
+	Button CreativeAsteroidV;
+	Button CreativeAsteroidV_Plus;
+	Button CreativeAsteroidV_Minus;
+	Button CreativeShowTrue;
 
-    DisplayButton CreativeShowLight;
+    Button CreativeShowLight;
 
-	DisplayButton NewGame;
+	Button NewGame;
 
-	DisplayButton Quit;
+	Button Quit;
 
 	private ButtonManager() {
 		final int b2x = 0   + 70;
 		final int b3x = b2x + 320;
 		final int b4x = b3x + 175;
-		Quit = new DisplayButton(0, 0, b2x, U.UI, "Quit","", true);
+		Quit = new Button(0, 0, b2x, U.UI, "Quit","", true);
 		//Quit.text_y *= 1.5;
 		//End of game
-		NewGame = new DisplayButton(800, 0, 200, U.UI, "New Game", "", true);
+		NewGame = new Button(800, 0, 200, U.UI, "New Game", "", true);
 		//Playing game
-		PlayingC             = new DisplayButton(b2x, 0,      b3x-b2x, U.UI/2, "Speed of Light: ","", false);
-		PlayingAsteroidSpeed = new DisplayButton(b2x, U.UI/2, b3x-b2x, U.UI/2, "Max Asteroid Speed: ","c", false);
-		PlayingLevel         = new DisplayButton(b3x, 0,      b4x-b3x, U.UI/2, "Level: ","", false);
-		PlayingScore         = new DisplayButton(b3x, U.UI/2, b4x-b3x, U.UI/2, "Score: ","", false);
+		PlayingC             = new Button(b2x, 0,      b3x-b2x, U.UI/2, "Speed of Light: ","", false);
+		PlayingAsteroidSpeed = new Button(b2x, U.UI/2, b3x-b2x, U.UI/2, "Max Asteroid Speed: ","c", false);
+		PlayingLevel         = new Button(b3x, 0,      b4x-b3x, U.UI/2, "Level: ","", false);
+		PlayingScore         = new Button(b3x, U.UI/2, b4x-b3x, U.UI/2, "Score: ","", false);
 		PlayingLevel.precision = false;
 		PlayingScore.precision = false;
 		//lives
 		LivesShip = new ShipGraphic(3);
 		//
 		//title screen
-		StartArcade            = new DisplayButton(50, 400, 200, 50, "Start Arcade", "", true);
-		StartCreative          = new DisplayButton(50, 500, 200, 50, "Start Creative", "", true);
-		Start_Toggle_Doppler   = new DisplayButton(400, 400, 250, 50, "Doppler Shift", "", true);
-		Start_Toggle_LengthCon = new DisplayButton(700, 400, 250, 50, "Length Contraction", "", true);
-		Start_Toggle_TimeCon   = new DisplayButton(400, 500, 250, 50, "Time Dialation", "", true);
-		Start_Toggle_Toroid    = new DisplayButton(700, 500, 250, 50, "Toroidal Universe", "", true);
+		StartArcade            = new Button(50, 400, 200, 50, "Start Arcade", "", true);
+		StartCreative          = new Button(50, 500, 200, 50, "Start Creative", "", true);
+		Start_Toggle_Doppler   = new Button(400, 400, 250, 50, "Doppler Shift", "", true);
+		Start_Toggle_LengthCon = new Button(700, 400, 250, 50, "Length Contraction", "", true);
+		Start_Toggle_TimeCon   = new Button(400, 500, 250, 50, "Time Dialation", "", true);
+		Start_Toggle_Toroid    = new Button(700, 500, 250, 50, "Toroidal Universe", "", true);
 		Start_Toggle_Doppler.isYesNo   = true;
 		Start_Toggle_LengthCon.isYesNo = true;
 		Start_Toggle_TimeCon.isYesNo   = true;
 		Start_Toggle_Toroid.isYesNo    = true;
 		//creative mode
-		CreativeAsteroids       = new DisplayButton(b2x,            0,      220,    U.UI/2, "Asteroids:", "", false);
-		CreativeAsteroids_Minus = new DisplayButton(b2x+220,        0,      U.UI/2, U.UI/2, "-", "", true);
-		CreativeAsteroids_Plus  = new DisplayButton(b2x+220+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
-		CreativeAsteroidV       = new DisplayButton(b2x,            U.UI/2, 220,    U.UI/2, "Asteroid V:", "", false);
-		CreativeAsteroidV_Minus = new DisplayButton(b2x+220,        U.UI/2, U.UI/2, U.UI/2, "-", "", true);
-		CreativeAsteroidV_Plus  = new DisplayButton(b2x+220+U.UI/2, U.UI/2, U.UI/2, U.UI/2, "+", "", true);
-		CreativeC               = new DisplayButton(350,            0,      260,    U.UI/2, "Speed of Light:", "", false);
-		CreativeC_Minus         = new DisplayButton(350+260,        0,      U.UI/2, U.UI/2, "-", "", true);
-		CreativeC_Plus          = new DisplayButton(350+260+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
-		CreativeShowTrue        = new DisplayButton(670,            0,      175,    U.UI,   "True Position", "", true);
-		CreativeShowLight       = new DisplayButton(670+175,        0,      155,    U.UI,   "Light Cones", "", true);
+		CreativeAsteroids       = new Button(b2x,            0,      220,    U.UI/2, "Asteroids:", "", false);
+		CreativeAsteroids_Minus = new Button(b2x+220,        0,      U.UI/2, U.UI/2, "-", "", true);
+		CreativeAsteroids_Plus  = new Button(b2x+220+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
+		CreativeAsteroidV       = new Button(b2x,            U.UI/2, 220,    U.UI/2, "Asteroid V:", "", false);
+		CreativeAsteroidV_Minus = new Button(b2x+220,        U.UI/2, U.UI/2, U.UI/2, "-", "", true);
+		CreativeAsteroidV_Plus  = new Button(b2x+220+U.UI/2, U.UI/2, U.UI/2, U.UI/2, "+", "", true);
+		CreativeC               = new Button(350,            0,      260,    U.UI/2, "Speed of Light:", "", false);
+		CreativeC_Minus         = new Button(350+260,        0,      U.UI/2, U.UI/2, "-", "", true);
+		CreativeC_Plus          = new Button(350+260+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
+		CreativeShowTrue        = new Button(670,            0,      175,    U.UI,   "True Position", "", true);
+		CreativeShowLight       = new Button(670+175,        0,      155,    U.UI,   "Light Cones", "", true);
 		CreativeAsteroids.precision = false;
 		CreativeShowTrue.isYesNo    = true;
 		CreativeShowLight.isYesNo   = true;
@@ -120,10 +120,10 @@ public class ButtonManager {
 			} else if (CreativeShowTrue.GetHover() == true) {
 				U.show_all_locations = !U.show_all_locations;
 			} else if (CreativeAsteroidV_Plus.GetHover() == true) {
-				U.velocity += 0.01f;
+				U.velocity += 0.05f;
 				//if (U.velocity > 1.25f) U.velocity = 1.25f;
 			} else if (CreativeAsteroidV_Minus.GetHover() == true) {
-				U.velocity -= 0.01;
+				U.velocity -= 0.05;
 				//if (U.velocity < 0.f) U.velocity = 0f;
 			} else if (CreativeC_Plus.GetHover() == true) {
 				U.c_pixel += 0.05f;
@@ -209,7 +209,7 @@ public class ButtonManager {
 		}
 		//Do FPS
 		_g2.setColor(Color.white);
-		_g2.drawString("FPS: "+U.MAIN._FPS, 900, 590);
+		_g2.drawString("FPS: "+U.MAIN._FPS, 900, 650);
 
 	}
 

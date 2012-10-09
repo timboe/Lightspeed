@@ -29,7 +29,7 @@ public class PlayerShip {
 		vx += Math.cos(a) * U.player_acceleration * dir;
 		vy += Math.sin(a) * U.player_acceleration * dir;
 		accelerating = true;
-
+		Constrain_V();
 	}
 
 	public void changeDirection(int dir) {
@@ -38,18 +38,19 @@ public class PlayerShip {
 		} else {
 			a -= Math.PI * (3./360.);
 		}
+		Constrain_V();
 	}
 
-	void Constrain() {
+	void Constrain_Pos() {
 		if (U.option_Torus == true) {
 			if (x < (0 - U.world_x_pixels2) ) {
 				x += U.world_x_pixels;
-			} else if (x + (2*r) >= U.world_x_pixels2) {
+			} else if (x + (2*r) > U.world_x_pixels2) {
 				x -= U.world_x_pixels;
 			}
 			if (y < (0 - U.world_y_pixels2 + U.UI) ) {
 				y += U.world_y_pixels - U.UI;
-			} else if (y + (2*r) >= U.world_y_pixels2) {
+			} else if (y + (2*r) > U.world_y_pixels2) {
 				y -= U.world_y_pixels - U.UI;
 			}
 		} else {
@@ -69,14 +70,16 @@ public class PlayerShip {
 				a = (float) (-2*Math.PI - GetHeading() + Math.PI/2.);
 			}
 		}
+	}
 
+	void Constrain_V() {
 		final float speed = (float) Math.hypot(vx, vy);
 		if (speed >= U.c_pixel) {
 			vx /= speed/U.c_pixel;
 			vy /= speed/U.c_pixel;
-		}
+		}	
 	}
-
+	
 	public void Damage() {
 		dmg = 20;
 	}
@@ -84,12 +87,14 @@ public class PlayerShip {
 	public double GetGameGamma() {
 		//It's Relativistic gamma which is mapped to effect magnitude
 		double gamma = GetGamma();
-		if (gamma > U.gamma_max) {
+		System.out.println("Debug gamma: "+gamma);
+
+		if (gamma > U.gamma_max || gamma < -U.gamma_max || gamma != gamma) {
 			gamma = U.gamma_max;
 		}
 		gamma /= U.gamma_reduction_factor;
 		gamma = 1f - gamma;
-		//System.out.println("Debug game gamma: "+gamma);
+		System.out.println("Debug game gamma: "+gamma);
 		
 		//System.out.println("log500(500) : " +  Math.log(5000) );
 		
@@ -106,7 +111,7 @@ public class PlayerShip {
 
 	public double GetGamma() {
 		final double velocity = (float) Math.hypot(vx, vy);
-		return (float) Math.abs(1. / ( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
+		return (float) Math.abs(1. / Math.sqrt( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
 	}
 
 	public float GetHeading() {
@@ -131,7 +136,7 @@ public class PlayerShip {
 	void Walk() {
 		x += vx;
 		y += vy;
-		Constrain();
+		Constrain_Pos();
 	}
 
 }

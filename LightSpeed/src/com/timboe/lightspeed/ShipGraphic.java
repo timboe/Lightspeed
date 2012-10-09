@@ -39,12 +39,12 @@ public class ShipGraphic {
 			}
 		}
 
-		_g2.setColor(Color.green);
-		_g2.fillPolygon(ship);
-		_g2.setColor(Color.gray);
-		_g2.fillOval(-2*scale, -2*scale, 4*scale, 4*scale);
 		_g2.setColor(Color.white);
-		_g2.drawPolygon(ship);
+		_g2.fillPolygon(ship);
+		//_g2.setColor(Color.gray);
+		//_g2.fillOval(-2*scale, -2*scale, 4*scale, 4*scale);
+		//_g2.setColor(Color.white);
+		//_g2.drawPolygon(ship);
 
 		if (dmg == true) {
 			_g2.setColor(Color.red);
