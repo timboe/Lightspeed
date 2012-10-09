@@ -20,7 +20,7 @@ public class PlayerShip {
 	public PlayerShip(int _x, int _y) {
 		x = _x + U.world_x_pixels2;
 		y = _y + U.world_y_pixels2;
-		a= 0;//(float) (Math.PI/2.);
+		a= (float) Math.toRadians(-25.5);//(float) (Math.PI/2.);
 
 		ship = new ShipGraphic(1);
 	}

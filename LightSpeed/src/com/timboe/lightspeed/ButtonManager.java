@@ -52,10 +52,10 @@ public class ButtonManager {
 		//End of game
 		NewGame = new Button(800, 0, 200, U.UI, "New Game", "", true);
 		//Playing game
-		PlayingC             = new Button(b2x, 0,      b3x-b2x, U.UI/2, "Speed of Light: ","", false);
-		PlayingAsteroidSpeed = new Button(b2x, U.UI/2, b3x-b2x, U.UI/2, "Max Asteroid Speed: ","c", false);
-		PlayingLevel         = new Button(b3x, 0,      b4x-b3x, U.UI/2, "Level: ","", false);
-		PlayingScore         = new Button(b3x, U.UI/2, b4x-b3x, U.UI/2, "Score: ","", false);
+		PlayingC             = new Button(b2x, 0,      b3x-b2x, U.UI/2, "Speed of Light:","", false);
+		PlayingAsteroidSpeed = new Button(b2x, U.UI/2, b3x-b2x, U.UI/2, "Max Asteroid Speed:","c", false);
+		PlayingLevel         = new Button(b3x, 0,      b4x-b3x, U.UI/2, "Level:","", false);
+		PlayingScore         = new Button(b3x, U.UI/2, b4x-b3x, U.UI/2, "Score:","", false);
 		PlayingLevel.precision = false;
 		PlayingScore.precision = false;
 		//lives

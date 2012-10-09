@@ -25,7 +25,7 @@ public final class Utility {
 	final int world_y_pixels = 600;
 	final int world_x_pixels2 = world_x_pixels/2;
 	final int world_y_pixels2 = world_y_pixels/2;
-	final int world_x_offset = (int) (world_x_pixels * 0.02); 
+	final int world_x_offset = (int) (world_x_pixels * 0.01); 
 	final int world_y_offset = (int) (world_y_pixels * 0.05); 
 
 
@@ -72,7 +72,7 @@ public final class Utility {
 	boolean show_light_cones = false;
 	boolean show_all_locations = false;
 	
-	GameMode currentMode = GameMode.Creative;
+	GameMode currentMode = GameMode.Title;
 	
 	int Level = 1;
 	int TicksPerLevel = 500;
@@ -82,8 +82,8 @@ public final class Utility {
 	float c_red = 0.00001f * 0.9f; //arcade speed of reducing C (tweak with second value)
 	float max_v_multiplier = 2.25f; //arcade maximum asteroid multiplier
 	float v_inc = 2.5f*c_red; //arcade speed to increase asteroids
-	//mouse location
 	
+	//mouse location
 	public Point CurMouse;
 	int ticks_with_mouse_down;
 	boolean mouseClick = false;

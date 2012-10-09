@@ -74,7 +74,9 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 				}
 			}
 			pointsScored *= U.Level;
-			B.PlayingScore.AddValue(pointsScored);
+			if (U.currentMode == GameMode.GameOn) {
+				B.PlayingScore.AddValue(pointsScored);
+			}
 			if (ToRemove.size() > 0){
 				U.list_of_rectangles_sync.removeAll(ToRemove);
 				if (U.Lives == 0) return true; //CHEAT
@@ -357,13 +359,13 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 			
 			//Blackout
 			g2.setColor(Color.black);
-			g2.fillRect(0 - U.world_x_pixels2 - 5*U.world_x_offset,
+			g2.fillRect(0 - U.world_x_pixels2 - 20*U.world_x_offset,
 					0 - U.world_y_pixels2 - 5*U.world_y_offset,
-					U.world_x_offset*5,
+					U.world_x_offset*20,
 					U.world_y_pixels + 10*U.world_y_offset);
 			g2.fillRect(0 + U.world_x_pixels2,
 					0 - U.world_y_pixels2 - 5*U.world_y_offset,
-					U.world_x_offset*5,
+					U.world_x_offset*20,
 					U.world_y_pixels + 10*U.world_y_offset);
 			g2.fillRect(0 - U.world_x_pixels2 - 5*U.world_x_offset,
 					0 - U.world_y_pixels2 - 5*U.world_y_offset,
@@ -447,12 +449,12 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 		if (U.currentMode == GameMode.Creative
 				&& U.CurMouse != null
 				&& (U.mouseClick||U.mouseDrag)
-				&& U.CurMouse.y > U.UI
-				&& U.CurMouse.y < U.world_y_pixels
-				&& U.CurMouse.x > 0
-				&& U.CurMouse.x < U.world_x_pixels) {
-			U.player.x = (int) U.CurMouse.getX() - (U.world_x_pixels2);
-			U.player.y = (int) U.CurMouse.getY() - (U.world_y_pixels2);
+				&& U.CurMouse.y > U.UI + U.world_y_offset
+				&& U.CurMouse.y < U.world_y_pixels + U.world_y_offset
+				&& U.CurMouse.x > 0 + U.world_x_offset
+				&& U.CurMouse.x < U.world_x_pixels + U.world_x_offset) {
+			U.player.x = (int) U.CurMouse.getX() - (U.world_x_pixels2) - U.world_x_offset;
+			U.player.y = (int) U.CurMouse.getY() - (U.world_y_pixels2) - U.world_y_offset;
 			U.player.vx = 0;
 			U.player.vy = 0;
 			U.player.a = 0;//(float) Math.PI/2f;
