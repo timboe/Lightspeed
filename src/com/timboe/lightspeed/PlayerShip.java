@@ -11,15 +11,21 @@ public class PlayerShip {
 	public float vx;
 	public float vy;
 	
-	int vtime;
-	float vel;
+	//test acceleration
+//	float vel = 0f;
 	float acc = 0.01f;
+	//float E = 0f;
+	float PX = 0;
+	float PY = 0;
+	float M = 1f;
 
 	float a;
 	private final int r = 4;
 	private final ShipGraphic ship;
 	boolean accelerating = false;
 	int dmg;
+	
+	//int recalculate_tick;
 
 	public PlayerShip(int _x, int _y) {
 		x = _x + U.world_x_pixels2;
@@ -28,13 +34,35 @@ public class PlayerShip {
 
 		ship = new ShipGraphic(1);
 	}
+	
+	public float GetRapidity() {
+		float P = getP();
+		float E = getE();
+		return (float) (0.5f * Math.log((E + (P*U.c_pixel))/(E - (P*U.c_pixel))));
+	}
+	
+	public float getE() {
+		return (float) Math.hypot(getM(),getP());
+	}
+	
+	public float getP() {
+		return (float) Math.hypot(PX, PY);
+	}
+
 
 	public void accelerate(int dir) {
-		if (dir >0 ) ++vtime;
-		else --vtime;
-		vel = (float) (U.c_pixel * Math.tanh((acc * vtime)/U.c_pixel));
-		vx = (float)(Math.cos(a) * vel);
-		vy = (float)(Math.sin(a) * vel);
+		//if (dir >0 ) 
+		PX += acc * Math.cos(a);
+		PY += acc * Math.sin(a);
+		float vel = (float) (U.c_pixel * Math.tanh(GetRapidity()/U.c_pixel));
+		
+		float P = getP();
+		float ratio = vel/P;
+		
+		vx = PX * ratio;//(float)(Math.cos(a) * vel);
+		vy = PY * ratio;//(float)(Math.sin(a) * vel);
+		
+		
 		
 		//vx += Math.cos(a) * U.player_acceleration * dir;
 		//vy += Math.sin(a) * U.player_acceleration * dir;
@@ -48,7 +76,6 @@ public class PlayerShip {
 		} else {
 			a -= Math.PI * (3./360.);
 		}
-		Constrain_V();
 	}
 
 	void Constrain_Pos() {
@@ -82,49 +109,32 @@ public class PlayerShip {
 		}
 	}
 
-	void Constrain_V() {
-		final float speed = (float) Math.hypot(vx, vy);
-		if (speed >= U.c_pixel) {
-			vx /= speed/U.c_pixel;
-			vy /= speed/U.c_pixel;
-		}	
-	}
 	
 	public void Damage() {
 		dmg = 20;
 	}
 
-	public double GetGameGamma() {
-		//It's Relativistic gamma which is mapped to effect magnitude
-		double gamma = GetGamma();
-		System.out.println("V:"+vel+"  gamma: "+gamma);
-		return 1./gamma;
-
-		//if (gamma > U.gamma_max || gamma < -U.gamma_max || gamma != gamma) {
-		//	gamma = U.gamma_max;
-		//}
-		//gamma /= U.gamma_reduction_factor;
-		//gamma = 1f - gamma;
-		//System.out.println("Debug game gamma: "+gamma);
-		
-		//System.out.println("log500(500) : " +  Math.log(5000) );
-		
-		//500 5000 = 0.9
-		//500 4000 = 0.875
-		//500 3000 = 0.8333333333333334
-		//500 2000 = 0.75
-		//500 1000 = 0.5
-		//500 600 = 16666666666666663
-		//500 500 = 0
-
-		//return gamma;
+	public float getM() {
+		return (float) (M * GetGamma());
 	}
 
 	public double GetGamma() {
 		final double velocity = (float) Math.hypot(vx, vy);
-		return (float) Math.abs(1. / Math.sqrt( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
+		
+		//float vel = (float) (U.c_pixel * Math.tanh(GetRapidity()/U.c_pixel));
+		
+		float gamma = (float) Math.abs(1. / Math.sqrt( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
+		
+		//System.out.println(" gamma: "+gamma+" E:"+getE()+" cos(a)"+Math.cos(a));
+
+		return gamma;
 	}
 
+	public double GetBeta() {
+		final double velocity = (float) Math.hypot(vx, vy);
+		return (velocity/U.c_pixel);
+	}
+	
 	public float GetHeading() {
 		return (float) (Math.atan2(vx,vy));
 	}

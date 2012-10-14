@@ -19,6 +19,7 @@ public class Button {
 	int text_x = 10;
 	int text_y = 22;
 
+	boolean highPrecision = false;
 	boolean precision = true;
 	private boolean Clickable = false;
 
@@ -95,7 +96,9 @@ public class Button {
 
 	public void SetValue(float _var) {
 		var = _var;
-		if (precision == true) {
+		if (highPrecision == true) {
+			var_str = String.format("%.5f", var);
+		} else if (precision == true) {
 			var_str = String.format("%.2f", var);
 		} else {
 			var_str = String.format("%.0f", var);

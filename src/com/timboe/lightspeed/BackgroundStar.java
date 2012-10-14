@@ -14,7 +14,7 @@ public class BackgroundStar {
 	public BackgroundStar(float _x, float _y) {
 		x = _x;
 		y = _y;
-	}
+	} 
 
 	public void Render(Graphics2D _g2) {
 		_g2.setColor(Color.white);

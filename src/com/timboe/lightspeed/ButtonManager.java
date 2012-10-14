@@ -35,6 +35,8 @@ public class ButtonManager {
 	Button CreativeAsteroidV;
 	Button CreativeAsteroidV_Plus;
 	Button CreativeAsteroidV_Minus;
+	Button CreativeGamma;
+	Button CreativeBeta;
 	Button CreativeShowTrue;
 
     Button CreativeShowLight;
@@ -73,20 +75,24 @@ public class ButtonManager {
 		Start_Toggle_TimeCon.isYesNo   = true;
 		Start_Toggle_Toroid.isYesNo    = true;
 		//creative mode
-		CreativeAsteroids       = new Button(b2x,            0,      220,    U.UI/2, "Asteroids:", "", false);
-		CreativeAsteroids_Minus = new Button(b2x+220,        0,      U.UI/2, U.UI/2, "-", "", true);
-		CreativeAsteroids_Plus  = new Button(b2x+220+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
-		CreativeAsteroidV       = new Button(b2x,            U.UI/2, 220,    U.UI/2, "Asteroid V:", "", false);
-		CreativeAsteroidV_Minus = new Button(b2x+220,        U.UI/2, U.UI/2, U.UI/2, "-", "", true);
-		CreativeAsteroidV_Plus  = new Button(b2x+220+U.UI/2, U.UI/2, U.UI/2, U.UI/2, "+", "", true);
-		CreativeC               = new Button(350,            0,      260,    U.UI/2, "Speed of Light:", "", false);
-		CreativeC_Minus         = new Button(350+260,        0,      U.UI/2, U.UI/2, "-", "", true);
-		CreativeC_Plus          = new Button(350+260+U.UI/2, 0,      U.UI/2, U.UI/2, "+", "", true);
-		CreativeShowTrue        = new Button(670,            0,      175,    U.UI,   "True Position", "", true);
-		CreativeShowLight       = new Button(670+175,        0,      155,    U.UI,   "Light Cones", "", true);
+		CreativeAsteroids       = new Button(b2x,              0,      220,           U.UI/2, "Asteroids:", "", false);
+		CreativeAsteroids_Minus = new Button(b2x+220,          0,      U.UI/2,        U.UI/2, "-", "", true);
+		CreativeAsteroids_Plus  = new Button(b2x+220+U.UI/2,   0,      U.UI/2,        U.UI/2, "+", "", true);
+		CreativeAsteroidV       = new Button(b2x,              U.UI/2, 220,           U.UI/2, "Asteroid V:", "", false);
+		CreativeAsteroidV_Minus = new Button(b2x+220,          U.UI/2, U.UI/2,        U.UI/2, "-", "", true);
+		CreativeAsteroidV_Plus  = new Button(b2x+220+U.UI/2,   U.UI/2, U.UI/2,        U.UI/2, "+", "", true);
+		CreativeC               = new Button(350,              0,      260,           U.UI/2, "Speed of Light:", "", false);
+		CreativeC_Minus         = new Button(350+260,          0,      U.UI/2,        U.UI/2, "-", "", true);
+		CreativeC_Plus          = new Button(350+260+U.UI/2,   0,      U.UI/2,        U.UI/2, "+", "", true);
+		CreativeBeta            = new Button(350,              U.UI/2, 260/2+U.UI/2,  U.UI/2, "β:", "", false);
+		CreativeGamma           = new Button(350+260/2+U.UI/2, U.UI/2, 260/2+U.UI/2,  U.UI/2, "γ:", "", false);
+		CreativeShowTrue        = new Button(670,              0,      175,           U.UI,   "True Position", "", true);
+		CreativeShowLight       = new Button(670+175,          0,      155,           U.UI,   "Light Cones", "", true);
 		CreativeAsteroids.precision = false;
 		CreativeShowTrue.isYesNo    = true;
 		CreativeShowLight.isYesNo   = true;
+		CreativeBeta.highPrecision  = true;
+		CreativeGamma.highPrecision = true;
 	}
 
 	public void ProcessMouseClick() {
@@ -190,6 +196,10 @@ public class ButtonManager {
 			Start_Toggle_Toroid.Render(_g2);
 		} else if (U.currentMode == GameMode.Creative) {
 			Quit.Render(_g2);
+			CreativeBeta.SetValue((float)U.player.GetBeta());
+			CreativeBeta.Render(_g2);
+			CreativeGamma.SetValue((float)U.player.GetGamma());
+			CreativeGamma.Render(_g2);
 			CreativeC.SetValue(U.c_pixel);
 			CreativeC.Render(_g2);
 			CreativeC_Plus.Render(_g2);

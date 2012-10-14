@@ -107,7 +107,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 
 	void doLengthContractionTransform(Graphics2D g2) {
 		g2.rotate(U.player.GetHeading());
-		g2.scale(1, U.player.GetGameGamma());
+		g2.scale(1, 1/U.player.GetGamma());
 		g2.rotate(-U.player.GetHeading());
 		//g2.scale(0.4,0.4);
 	}
@@ -121,7 +121,7 @@ public class LIGHTSPEED extends Applet implements Runnable, MouseMotionListener,
 			E = true;
 		}
 		if (e.getKeyChar() == 's' || e.getKeyChar() == 'S' || e.getKeyCode() == KeyEvent.VK_DOWN) {
-			S = true;
+			//S = true;
 		}
 		if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A' || e.getKeyCode() == KeyEvent.VK_LEFT) {
 			W = true;
