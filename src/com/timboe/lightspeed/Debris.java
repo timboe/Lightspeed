@@ -4,42 +4,45 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class Debris extends DopplerObject {
-
 	private final Utility U = Utility.GetUtility();
 	private final PhotonManager P = PhotonManager.GetPhotonManager();
+	private float speed;
+	private float dist_to_tick;
+	private final int GID;
+	private boolean dead;
+	private final int r;// radius
 
-	float speed;
-	float dist_to_tick;
-	int GID;
-	boolean dead;
+	public Debris(Rectangle R) {
+		super(R.x + R.shape_size2, R.y + R.shape_size2, R.vx, R.vy, (short) 0,
+				(short) 0);
 
-	Debris(Rectangle R) {
-		super(R.x+R.shape_size2, R.y+R.shape_size2, R.vx, R.vy, (short)0, (short)0);
+		vx *= 1 + U.R.nextFloat();
+		vy *= 1 + U.R.nextFloat();
 
-		if (vx < 0.4) vx = 0.4f;
-		if (vy < 0.4) vy = 0.4f;
-		
-		vx *= 1+U.R.nextFloat();
-		vy *= 1+U.R.nextFloat();
-
-		final float speed = (float) Math.hypot(vx, vy);
-		if (speed >= U.c_pixel) {
-			vx /= speed/U.c_pixel;
-			vy /= speed/U.c_pixel;
+		float speed = (float) Math.hypot(vx, vy);
+		if (speed >= U.getC()) {
+			vx /= speed / U.getC();
+			vy /= speed / U.getC();
+			speed = (float) Math.hypot(vx, vy);
+		} else if (speed < 0.4f) {
+			vx /= speed / 0.4f;
+			vy /= speed / 0.4f;
+			speed = (float) Math.hypot(vx, vy);
 		}
 
+		r = 4;
 		dead = false;
 		GID = ++U.GID;
 	}
 
-	void Constrain() {
+	public void Constrain() {
 		if (x < (0 - U.world_x_pixels2)) {
 			Kill();
-		} else if (x + 2 >= U.world_x_pixels2) {
+		} else if (x + 2 * r >= U.world_x_pixels2) {
 			Kill();
-		} else if (y < (0 - U.world_y_pixels2 + U.UI) ) {
+		} else if (y < (0 - U.world_y_pixels2 + U.UI)) {
 			Kill();
-		} else if (y + 2 >= U.world_y_pixels2) {
+		} else if (y + 2 * r >= U.world_y_pixels2) {
 			Kill();
 		}
 	}
@@ -48,8 +51,12 @@ public class Debris extends DopplerObject {
 		return dead;
 	}
 
+	public int getGID() {
+		return GID;
+	}
+
 	public float GetSmear() {
-		return (1+((U.R.nextInt(20) - 10) * 0.2f));
+		return (1 + ((U.R.nextInt(20) - 10) * 0.3f));
 	}
 
 	public void Kill() {
@@ -58,24 +65,26 @@ public class Debris extends DopplerObject {
 
 	public void RenderReal(Graphics2D _g2) {
 		_g2.setColor(Color.gray);
-		_g2.drawOval((int)x-1, (int)y-1, 2, 2);
+		_g2.drawOval(Math.round(x - r), Math.round(y - r), r * 2, r * 2);
 	}
 
-	void Tick(int _tick) {
-		if (GetDead() == true) return;
+	public void Tick(int _tick) {
+		if (GetDead() == true)
+			return;
 		if (dist_to_tick > U.granularity) {
 			dist_to_tick = 0;
-			P.AddShell( new PhotonShell(x, y, vx, vy, (short)0, (short)0, 4, Color.gray,  GID, true) );
+			P.AddShell(new PhotonShell(x, y, vx, vy, (short) 0, (short) 0, r,
+					Color.gray, GID, true));
 		}
 	}
 
-	void Walk() {
-		if (GetDead() == true) return;
+	public void Walk() {
+		if (GetDead() == true)
+			return;
 		x += vx;
 		y += vy;
-		dist_to_tick += U.velocity + U.c_pixel;
+		dist_to_tick += ((speed * 2f) + (U.getC() * 2f));
 		Constrain();
 	}
-
 
 }

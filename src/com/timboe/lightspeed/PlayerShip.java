@@ -4,139 +4,136 @@ import java.awt.Graphics2D;
 
 public class PlayerShip {
 	private final Utility U = Utility.GetUtility();
-
+	// Position, velocity components, velocity
 	public float x;
 	public float y;
-
 	public float vx;
 	public float vy;
-	
-	//test acceleration
-//	float vel = 0f;
-	float acc = 0.01f;
-	//float E = 0f;
-	float PX = 0;
-	float PY = 0;
-	float M = 1f;
-
-	float a;
-	private final int r = 4;
-	private final ShipGraphic ship;
-	boolean accelerating = false;
-	int dmg;
-	
-	//int recalculate_tick;
+	private float v;
+	// Ship behaviour tweaked by changing its acceleration and rest mass
+	float acceleration = 0.01f;
+	float M = 5f; // Mass
+	// These quantities need to be updated when changing inertial frames
+	// (rotation doesn't count)
+	private float E; // energy
+	private float P; // momentum (scalar)
+	private float PX; // momentum * X unit vector, signed
+	private float PY; // momentum * Y unit vector, signed
+	private float RAPIDITY; // Ship rapidity
+	private float GAMMA; // Lorentz factor
+	private float BETA; // Fractional velocity of c
+	// Position and misc
+	private float a; // Angle (ship pointing)
+	private final int r; // Radius
+	private final ShipGraphic ship; // Ship design
+	private boolean accelerating = false; // Show acceleration graphic
+	private int dmg; // Show damage graphic (for dmg frames)
 
 	public PlayerShip(int _x, int _y) {
 		x = _x + U.world_x_pixels2;
 		y = _y + U.world_y_pixels2;
-		a= (float) Math.toRadians(0);//(float) (Math.PI/2.);
-
 		ship = new ShipGraphic(1);
-	}
-	
-	public float GetRapidity() {
-		float P = getP();
-		float E = getE();
-		return (float) (0.5f * Math.log((E + (P*U.c_pixel))/(E - (P*U.c_pixel))));
-	}
-	
-	public float getE() {
-		return (float) Math.hypot(getM(),getP());
-	}
-	
-	public float getP() {
-		return (float) Math.hypot(PX, PY);
+		r = 4;
+		Reset();
 	}
 
-
-	public void accelerate(int dir) {
-		//if (dir >0 ) 
-		PX += acc * Math.cos(a);
-		PY += acc * Math.sin(a);
-		float vel = (float) (U.c_pixel * Math.tanh(GetRapidity()/U.c_pixel));
-		
-		float P = getP();
-		float ratio = vel/P;
-		
-		vx = PX * ratio;//(float)(Math.cos(a) * vel);
-		vy = PY * ratio;//(float)(Math.sin(a) * vel);
-		
-		
-		
-		//vx += Math.cos(a) * U.player_acceleration * dir;
-		//vy += Math.sin(a) * U.player_acceleration * dir;
-		//accelerating = true;
-		//Constrain_V();
+	public void accelerate(float offset, float multiplier) {
+		// Ship acceleration is constant * c^2 such that acceleration gradient
+		// is the same
+		// for different values of c.
+		PX += (acceleration * U.getC() * U.getC()) * Math.cos(getA() + offset)
+				* multiplier;
+		PY += (acceleration * U.getC() * U.getC()) * Math.sin(getA() + offset)
+				* multiplier;
+		// Multiplier allows front booster to be less powerful than the rear
+		// booster
+		P = (float) Math.hypot(PX, PY);
+		ChangeFrame();
 	}
 
 	public void changeDirection(int dir) {
 		if (dir > 0) {
-			a += Math.PI * (3./360.);
+			a = (float) (getA() + Math.PI * (3. / 360.));
 		} else {
-			a -= Math.PI * (3./360.);
+			a = (float) (getA() - Math.PI * (3. / 360.));
 		}
 	}
 
-	void Constrain_Pos() {
+	public void ChangeFrame() {
+		// Energy through relativistic energy-momentum relationship
+		E = (float) Math.sqrt(Math.pow(M * U.getC() * U.getC(), 2)
+				+ Math.pow(P * U.getC(), 2));
+		// Energy and momentum define ship rapidity
+		RAPIDITY = (float) (0.5f * Math.log((E + (P * U.getC()))
+				/ (E - (P * U.getC()))));
+		// Velocity is the hyperbolic tangent of rapidity
+		v = (float) (U.getC() * Math.tanh(RAPIDITY / U.getC()));
+
+		// Components vx and vy are scaled from the momentum vectors
+		final float ratio_v_to_P = v / P;
+		if (ratio_v_to_P == ratio_v_to_P) { // Check for NaN (at velocity === 0)
+			vx = PX * ratio_v_to_P;
+			vy = PY * ratio_v_to_P;
+		}
+
+		BETA = (v / U.getC());
+		GAMMA = (float) Math.abs(1. / Math.sqrt(1. - BETA * BETA));
+		// System.out.println("ratio_v_to_P:"+ratio_v_to_P);
+	}
+
+	private void Constrain() {
 		if (U.option_Torus == true) {
-			if (x < (0 - U.world_x_pixels2) ) {
+			if (x < (0 - U.world_x_pixels2)) {
 				x += U.world_x_pixels;
-			} else if (x + (2*r) > U.world_x_pixels2) {
+			} else if (x + (2 * r) > U.world_x_pixels2) {
 				x -= U.world_x_pixels;
 			}
-			if (y < (0 - U.world_y_pixels2 + U.UI) ) {
+			if (y < (0 - U.world_y_pixels2 + U.UI)) {
 				y += U.world_y_pixels - U.UI;
-			} else if (y + (2*r) > U.world_y_pixels2) {
+			} else if (y + (2 * r) > U.world_y_pixels2) {
 				y -= U.world_y_pixels - U.UI;
 			}
 		} else {
-			if (x < (0 - U.world_x_pixels2) ) {
-				vx = Math.abs(vx);
-				a = (float) (+Math.PI - GetHeading() - Math.PI/2.);
-			} else if (x + (2*r) >= U.world_x_pixels2) {
-				vx = -(Math.abs(vx));
-				a = (float) (-Math.PI - GetHeading() - Math.PI/2.);
+			if (x < (0 - U.world_x_pixels2)) {
+				PX = Math.abs(PX);
+				a = ((float) (+Math.PI - getHeading()));
+				ChangeFrame();
+			} else if (x + (2 * r) >= U.world_x_pixels2) {
+				PX = -(Math.abs(PX));
+				a = ((float) (-Math.PI - getHeading()));
+				ChangeFrame();
 			}
 
-			if (y < (0 - U.world_y_pixels2 + U.UI) ) {
-				vy = Math.abs(vy);
-				a = (float) (2*Math.PI - GetHeading() + Math.PI/2.);
-			} else if (y + (2*r) >= U.world_y_pixels2) {
-				vy = -(Math.abs(vy));
-				a = (float) (-2*Math.PI - GetHeading() + Math.PI/2.);
+			if (y < (0 - U.world_y_pixels2 + U.UI)) {
+				PY = Math.abs(PY);
+				a = ((float) (2 * Math.PI - getHeading()));
+				ChangeFrame();
+			} else if (y + (2 * r) >= U.world_y_pixels2) {
+				PY = -(Math.abs(PY));
+				a = ((float) (-2 * Math.PI - getHeading()));
+				ChangeFrame();
 			}
 		}
 	}
 
-	
 	public void Damage() {
 		dmg = 20;
 	}
 
-	public float getM() {
-		return (float) (M * GetGamma());
+	public float getA() {
+		return a;
 	}
 
-	public double GetGamma() {
-		final double velocity = (float) Math.hypot(vx, vy);
-		
-		//float vel = (float) (U.c_pixel * Math.tanh(GetRapidity()/U.c_pixel));
-		
-		float gamma = (float) Math.abs(1. / Math.sqrt( 1. - ((velocity*velocity)/(U.c_pixel*U.c_pixel)) ));
-		
-		//System.out.println(" gamma: "+gamma+" E:"+getE()+" cos(a)"+Math.cos(a));
-
-		return gamma;
+	public double getBeta() {
+		return BETA;
 	}
 
-	public double GetBeta() {
-		final double velocity = (float) Math.hypot(vx, vy);
-		return (velocity/U.c_pixel);
+	public double getGamma() {
+		return GAMMA;
 	}
-	
-	public float GetHeading() {
-		return (float) (Math.atan2(vx,vy));
+
+	public float getHeading() {
+		return (float) (Math.atan2(vy, vx));
 	}
 
 	private boolean IsDamaged() {
@@ -148,16 +145,29 @@ public class PlayerShip {
 	}
 
 	public void Render(Graphics2D _g2) {
-		//WARNING - altering renderer
-		ship.Render(_g2, Math.round(x), Math.round(y), a, accelerating, IsDamaged());
+		ship.Render(_g2, Math.round(x), Math.round(y), getA(), accelerating,
+				IsDamaged());
 		accelerating = false;
 	}
 
+	public void Reset() {
+		PX = 0f;
+		PY = 0f;
+		vx = 0f;
+		vy = 0f;
+		E = 0f;
+		P = 0f;
+		v = 0f;
+		RAPIDITY = 0f;
+		GAMMA = 1f;
+		BETA = 0f;
+		a = ((float) Math.toRadians(-90));
+	}
 
-	void Walk() {
+	public void Walk() {
 		x += vx;
 		y += vy;
-		Constrain_Pos();
+		Constrain();
 	}
 
 }
