@@ -83,7 +83,7 @@ public class LIGHTSPEED extends Applet implements Runnable,
 				synchronized (U.list_of_debris_sync) {
 					U.list_of_rectangles_sync.removeAll(ToRemove);
 				}
-				// if (U.Lives == 0) return true; //CHEAT
+				if (U.Lives == 0) return true; //disable this line to CHEAT
 			}
 		}
 		return false;

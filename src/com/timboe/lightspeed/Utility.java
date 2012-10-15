@@ -27,7 +27,7 @@ public final class Utility {
 	final int world_y_pixels = 600;
 	final int world_x_pixels2 = world_x_pixels / 2;
 	final int world_y_pixels2 = world_y_pixels / 2;
-	final int world_x_offset = (int) (world_x_pixels * 0.01);
+	final int world_x_offset = (int) (world_x_pixels * 0.03);
 	final int world_y_offset = (int) (world_y_pixels * 0.05);
 
 	private final LinkedList<Rectangle> list_of_rectangles = new LinkedList<Rectangle>();

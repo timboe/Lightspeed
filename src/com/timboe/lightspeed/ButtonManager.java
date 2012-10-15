@@ -239,7 +239,7 @@ public class ButtonManager {
 			Start_Toggle_Toroid.Render(_g2);
 			_g2.setColor(Color.white);
 			_g2.drawString(String.format("Version: %.1f", U.version_number),
-					U.world_x_offset, 650);
+					U.world_x_offset, 655);
 		} else if (U.currentMode == GameMode.Creative) {
 			Quit.Render(_g2);
 			CreativeBeta.SetValue((float) U.player.getBeta());
@@ -286,7 +286,7 @@ public class ButtonManager {
 		}
 		// Do FPS
 		_g2.setColor(Color.white);
-		_g2.drawString("FPS: " + U.MAIN.getFPS(), 900, 650);
+		_g2.drawString("FPS: " + U.MAIN.getFPS(), 900, 655);
 
 	}
 

@@ -53,13 +53,17 @@ public class Rectangle extends DopplerObject {
 		} else {
 			if (x < (0 - U.world_x_pixels2)) {
 				a = (float) (+Math.PI - a);
+				ChangeFrame();
 			} else if (x + shape_size >= U.world_x_pixels2) {
 				a = (float) (-Math.PI - a);
+				ChangeFrame();
 			}
 			if (y < (0 - U.world_y_pixels2 + U.UI)) {
 				a = (float) (2 * Math.PI - a);
+				ChangeFrame();
 			} else if (y + shape_size >= U.world_y_pixels2) {
 				a = (float) (-2 * Math.PI - a);
+				ChangeFrame();
 			}
 		}
 	}

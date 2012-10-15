@@ -38,12 +38,9 @@ public class PlayerShip {
 	}
 
 	public void accelerate(float offset, float multiplier) {
-		// Ship acceleration is constant * c^2 such that acceleration gradient
-		// is the same
-		// for different values of c.
-		PX += (acceleration * U.getC() * U.getC()) * Math.cos(getA() + offset)
+		PX += (acceleration * Math.pow(U.getC(),2)) * Math.cos(getA() + offset)
 				* multiplier;
-		PY += (acceleration * U.getC() * U.getC()) * Math.sin(getA() + offset)
+		PY += (acceleration * Math.pow(U.getC(),2)) * Math.sin(getA() + offset)
 				* multiplier;
 		// Multiplier allows front booster to be less powerful than the rear
 		// booster
