@@ -11,7 +11,7 @@ public class PlayerShip {
 	public float vy;
 	private float v;
 	// Ship behaviour tweaked by changing its acceleration and rest mass
-	float acceleration = 0.01f;
+	float acceleration = 0.015f;
 	float M = 5f; // Mass
 	// These quantities need to be updated when changing inertial frames
 	// (rotation doesn't count)
@@ -19,9 +19,10 @@ public class PlayerShip {
 	private float P; // momentum (scalar)
 	private float PX; // momentum * X unit vector, signed
 	private float PY; // momentum * Y unit vector, signed
-	private float RAPIDITY; // Ship rapidity
-	private float GAMMA; // Lorentz factor
-	private float BETA; // Fractional velocity of c
+	private double RAPIDITY; // Ship rapidity
+	private double GAMMA; // Lorentz factor
+	private double BETA; // Fractional velocity of c
+	private float HEADING; //Angle of motion
 	// Position and misc
 	private float a; // Angle (ship pointing)
 	private final int r; // Radius
@@ -38,10 +39,8 @@ public class PlayerShip {
 	}
 
 	public void accelerate(float offset, float multiplier) {
-		PX += (acceleration * Math.pow(U.getC(),2)) * Math.cos(getA() + offset)
-				* multiplier;
-		PY += (acceleration * Math.pow(U.getC(),2)) * Math.sin(getA() + offset)
-				* multiplier;
+		PX += acceleration * Math.pow(U.getC(), 2) * Math.cos(getA() + offset) * multiplier;
+		PY += acceleration * Math.pow(U.getC(), 2) * Math.sin(getA() + offset) * multiplier;
 		// Multiplier allows front booster to be less powerful than the rear
 		// booster
 		P = (float) Math.hypot(PX, PY);
@@ -71,6 +70,7 @@ public class PlayerShip {
 		if (ratio_v_to_P == ratio_v_to_P) { // Check for NaN (at velocity === 0)
 			vx = PX * ratio_v_to_P;
 			vy = PY * ratio_v_to_P;
+			HEADING = (float) (Math.atan2(vy, vx));
 		}
 
 		BETA = (v / U.getC());
@@ -79,35 +79,35 @@ public class PlayerShip {
 	}
 
 	private void Constrain() {
-		if (U.option_Torus == true) {
+		if (U.getTorus() == true) {
 			if (x < (0 - U.world_x_pixels2)) {
 				x += U.world_x_pixels;
-			} else if (x + (2 * r) > U.world_x_pixels2) {
+			} else if (x > U.world_x_pixels2) {
 				x -= U.world_x_pixels;
 			}
 			if (y < (0 - U.world_y_pixels2 + U.UI)) {
 				y += U.world_y_pixels - U.UI;
-			} else if (y + (2 * r) > U.world_y_pixels2) {
+			} else if (y > U.world_y_pixels2) {
 				y -= U.world_y_pixels - U.UI;
 			}
 		} else {
 			if (x < (0 - U.world_x_pixels2)) {
 				PX = Math.abs(PX);
-				a = ((float) (+Math.PI - getHeading()));
+				//a = ((float) (+Math.PI - getHeading()));
 				ChangeFrame();
 			} else if (x + (2 * r) >= U.world_x_pixels2) {
 				PX = -(Math.abs(PX));
-				a = ((float) (-Math.PI - getHeading()));
+				//a = ((float) (-Math.PI - getHeading()));
 				ChangeFrame();
 			}
 
 			if (y < (0 - U.world_y_pixels2 + U.UI)) {
 				PY = Math.abs(PY);
-				a = ((float) (2 * Math.PI - getHeading()));
+				//a = ((float) (2 * Math.PI - getHeading()));
 				ChangeFrame();
 			} else if (y + (2 * r) >= U.world_y_pixels2) {
 				PY = -(Math.abs(PY));
-				a = ((float) (-2 * Math.PI - getHeading()));
+				//a = ((float) (-2 * Math.PI - getHeading()));
 				ChangeFrame();
 			}
 		}
@@ -130,7 +130,7 @@ public class PlayerShip {
 	}
 
 	public float getHeading() {
-		return (float) (Math.atan2(vy, vx));
+		return HEADING;
 	}
 
 	private boolean IsDamaged() {

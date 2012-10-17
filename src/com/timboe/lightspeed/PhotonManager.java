@@ -57,7 +57,7 @@ public class PhotonManager {
 					toDraw.add(_p);
 					_p.SetSeen();
 				} else if (U.currentMode == GameMode.GameOn
-						&& U.option_Torus == false && _p.GetSeen() == true) {
+						&& U.getTorus() == false && _p.GetSeen() == true) {
 					_p.Kill();
 				}
 			}

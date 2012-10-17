@@ -21,8 +21,7 @@ public class LIGHTSPEED extends Applet implements Runnable,
 	private static final long serialVersionUID = 5213789766366330870L;
 	private long _TIME_OF_LAST_FRAME = 0; // Internal
 	private long _FPS = 0;
-	private final int _DO_FPS_EVERY_X_FRAMES = 10; // refresh FPS after how many
-												// frames
+	private final int _DO_FPS_EVERY_X_FRAMES = 10; // refresh FPS after X frames
 	private long _TIME_OF_NEXT_TICK; // Internal
 	private int _TICK; // Counter
 	private int _FRAME; // Counter
@@ -109,10 +108,9 @@ public class LIGHTSPEED extends Applet implements Runnable,
 
 	private void doLengthContractionTransform(Graphics2D g2) {
 		g2.rotate(U.player.getHeading());
-		// System.out.println("SF " + 1f/((U.player.GetGamma()*0.5f )+0.5f));
-		g2.scale(
-				1. / ((U.player.getGamma() * (1f - U.length_contraction_reduction)) + U.length_contraction_reduction),
-				1.);
+		double LC = 1./((((double)U.player.getGamma() - 1) * (1 - U.length_cont_red)) + 1.);
+		//System.out.println("LC " + LC);
+		g2.scale(LC, 1.);
 		g2.rotate(-U.player.getHeading());
 	}
 
@@ -138,21 +136,6 @@ public class LIGHTSPEED extends Applet implements Runnable,
 			U.list_of_stars.add(new BackgroundStar(U.R.nextFloat()
 					* U.world_x_pixels - U.world_x_pixels2, U.R.nextFloat()
 					* (U.world_y_pixels - U.UI) - U.world_y_pixels2 + U.UI));
-		}
-
-		if (U.currentMode == GameMode.GameOn) {
-			NewGame(); // DEBUG
-		}
-		if (U.currentMode == GameMode.Creative) {
-			NewCreative(); // DEBUG
-			U.list_of_rectangles_sync.add(new Rectangle((int) (U.R.nextFloat()
-					* (U.world_x_pixels - 10) - U.world_x_pixels2), (int) (U.R
-					.nextFloat()
-					* (U.world_y_pixels - 10 - U.UI)
-					- U.world_y_pixels2 + U.UI), 7 + U.R.nextInt(5) - 2, 1f));
-			U.show_all_locations = true;
-			U.setC(1f);
-			U.setV(0.95f);
 		}
 	}
 
@@ -249,7 +232,7 @@ public class LIGHTSPEED extends Applet implements Runnable,
 	public void NewGame() {
 		Clear();
 
-		for (int n = 1; n <= 50; ++n) {
+		for (int n = 1; n <= U.nEnemies; ++n) {
 			int rx = 0, ry = 0;
 			while (rx < 200 && rx > -200) {
 				rx = (int) (U.R.nextFloat() * (U.world_x_pixels - 10) - U.world_x_pixels2);
@@ -259,8 +242,7 @@ public class LIGHTSPEED extends Applet implements Runnable,
 						- U.world_y_pixels2 + U.UI);
 			}
 			final Rectangle R = new Rectangle(rx, ry, 7 + U.R.nextInt(5) - 2, // size
-					(float) ((1. / 50.) * n));// speed //(float)
-												// (U.R.nextFloat() * 0.5);
+					(float) ((1f / (float)U.nEnemies) * n));// speed
 			synchronized (U.list_of_rectangles_sync) {
 				U.list_of_rectangles_sync.add(R);
 			}
@@ -349,7 +331,7 @@ public class LIGHTSPEED extends Applet implements Runnable,
 		} else { // CREATIVE, GAME ON, GAME OVER
 			g2.translate(U.world_x_pixels2, U.world_y_pixels2);
 
-			if (U.option_Length == true) {
+			if (U.getLength() == true) {
 				doLengthContractionTransform(g2);
 			}
 
@@ -358,8 +340,10 @@ public class LIGHTSPEED extends Applet implements Runnable,
 			}
 
 			// Begin CLIP
-			g2.setClip(0 - U.world_x_pixels2 - 1, 0 - U.world_y_pixels2 + U.UI
-					- 1, U.world_x_pixels + 2, U.world_y_pixels - U.UI + 2);
+			g2.setClip( 0 - U.world_x_pixels2 - 1, 
+						0 - U.world_y_pixels2 + U.UI - 1, 
+						U.world_x_pixels + 2, 
+						U.world_y_pixels - U.UI + 2 );
 
 			// draw what player sees
 			P.RenderFromLocation(g2, U.player.x, U.player.y);
@@ -396,7 +380,7 @@ public class LIGHTSPEED extends Applet implements Runnable,
 			// Outer box
 			g2.setColor(Color.white);
 			g2.drawRect(0 - U.world_x_pixels2, 0 - U.world_y_pixels2 + U.UI,
-					U.world_x_pixels, U.world_y_pixels - U.UI);
+						U.world_x_pixels, U.world_y_pixels - U.UI);
 			// g2.drawRect(0 - U.world_x_pixels2,
 			// 0 - U.world_y_pixels2 - U.world_y_pixels + U.UI ,
 			// U.world_x_pixels,
@@ -440,10 +424,8 @@ public class LIGHTSPEED extends Applet implements Runnable,
 			if (_TICK % _TICKS_PER_RENDER == 0) {
 				++_FRAME;
 				if (_FRAME % _DO_FPS_EVERY_X_FRAMES == 0) {
-					_FPS = Math
-							.round(1.
-									/ (System.currentTimeMillis() - _TIME_OF_LAST_FRAME)
-									* 1000. * _DO_FPS_EVERY_X_FRAMES);
+					_FPS = Math.round(1. / (System.currentTimeMillis() - _TIME_OF_LAST_FRAME)
+									  * 1000. * _DO_FPS_EVERY_X_FRAMES);
 					_TIME_OF_LAST_FRAME = System.currentTimeMillis();
 				}
 				repaint();
@@ -470,16 +452,18 @@ public class LIGHTSPEED extends Applet implements Runnable,
 			}
 		}
 
-		if (U.currentMode == GameMode.Creative && U.CurMouse != null
-				&& (U.mouseClick || U.mouseDrag)
-				&& U.CurMouse.y > U.UI + U.world_y_offset
-				&& U.CurMouse.y < U.world_y_pixels + U.world_y_offset
-				&& U.CurMouse.x > 0 + U.world_x_offset
-				&& U.CurMouse.x < U.world_x_pixels + U.world_x_offset) {
+		if (U.currentMode == GameMode.Creative
+			&& U.CurMouse != null
+			&& (U.mouseClick || U.mouseDrag)
+			&& U.CurMouse.y > U.UI + U.world_y_offset
+			&& U.CurMouse.y < U.world_y_pixels + U.world_y_offset
+			&& U.CurMouse.x > 0 + U.world_x_offset
+			&& U.CurMouse.x < U.world_x_pixels + U.world_x_offset) {
+				
 			U.player.x = (int) U.CurMouse.getX() - (U.world_x_pixels2)
-					- U.world_x_offset;
+						- U.world_x_offset;
 			U.player.y = (int) U.CurMouse.getY() - (U.world_y_pixels2)
-					- U.world_y_offset;
+						- U.world_y_offset;
 			U.player.Reset();
 		}
 
@@ -499,9 +483,6 @@ public class LIGHTSPEED extends Applet implements Runnable,
 		U.player.Walk();
 
 		++U.shellTime;
-
-		// break point
-		// if (_TICK%U.time_dilation == 0) return;
 
 		synchronized (U.list_of_rectangles_sync) {
 			for (final Rectangle _r : U.list_of_rectangles_sync) {

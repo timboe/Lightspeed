@@ -61,9 +61,11 @@ public class PhotonShell extends DopplerObject implements
 			return;
 		}
 
-		if (U.option_Doppler == true) {
+		if (U.getDoppler() == true) {
+			//System.out.print("DO DOPPLER ");
 			SetDopplerColourMap();
 		} else {
+			//System.out.print("DONT DO DOPPLER ");
 			shape_color = U.default_colour;
 		}
 		if (Math.hypot(vx, vy) > U.getC()) {

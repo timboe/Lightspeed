@@ -49,7 +49,10 @@ public class DopplerObject {
 		double doppler = (my_axis_velocity - pl_axis_velocity)
 				/ Math.sqrt(1 - ((my_axis_velocity * pl_axis_velocity) / (U
 						.getC() * U.getC())));
-		// System.out.println("Debug game gamma: "+doppler);
+		
+		//normalise
+		doppler /= U.getC();
+		//System.out.println("Debug game gamma: "+doppler);
 
 		if (my_vx_axis + my_vy_axis + pl_vx_axis + pl_vy_axis < 0) {
 			doppler *= -1;

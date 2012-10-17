@@ -19,7 +19,7 @@ public class Rectangle extends DopplerObject {
 		shape_size = _shape_size;
 		shape_size2 = _shape_size / 2;
 		shape_color = U.default_colour;
-		a = (float) (U.R.nextFloat() * Math.PI);
+		a = (float) (U.R.nextFloat() * 2 * Math.PI);
 		speed = _speed;
 		ChangeFrame();
 		GID = ++U.GID;
@@ -39,7 +39,7 @@ public class Rectangle extends DopplerObject {
 	}
 
 	private void Constrain() {
-		if (U.option_Torus == true) {
+		if (U.getTorus() == true) {
 			if (x + shape_size < (0 - U.world_x_pixels2)) {
 				x += U.world_x_pixels;
 			} else if (x >= U.world_x_pixels2) {
@@ -73,7 +73,7 @@ public class Rectangle extends DopplerObject {
 	}
 
 	public void RenderReal(Graphics2D _g2) {
-		if (U.option_Doppler == true) {
+		if (U.getDoppler() == true) {
 			SetDopplerColourMap();
 		} else {
 			shape_color = U.default_colour;

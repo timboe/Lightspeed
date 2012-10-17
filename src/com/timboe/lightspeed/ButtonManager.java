@@ -75,13 +75,13 @@ public class ButtonManager {
 		// title screen
 		StartArcade = new Button(50, 400, 200, 50, "Arcade Mode", "", true);
 		StartCreative = new Button(50, 500, 200, 50, "Sandbox Mode", "", true);
-		Start_Toggle_Doppler = new Button(0, 0, 250, 50, "Doppler Shift", "",
+		Start_Toggle_Doppler = new Button(0+150, 0, 250, 50, "Doppler Shift", "",
 				true);
-		Start_Toggle_LengthCon = new Button(300, 0, 250, 50,
+		Start_Toggle_LengthCon = new Button(300+150, 0, 250, 50,
 				"Length Contraction", "", true);
 		// Start_Toggle_TimeCon = new Button(400, 0, 250, 50, "Time Dialation",
 		// "", true);
-		Start_Toggle_Toroid = new Button(600, 0, 250, 50, "Toroidal Universe",
+		Start_Toggle_Toroid = new Button(600+150, 0, 250, 50, "Toroidal Universe",
 				"", true);
 		Start_Toggle_Doppler.setIsYesNo(true);
 		Start_Toggle_LengthCon.setIsYesNo(true);
@@ -147,13 +147,13 @@ public class ButtonManager {
 				U.MAIN.NewCreative();
 				U.currentMode = GameMode.Creative;
 			} else if (Start_Toggle_Doppler.GetHover() == true) {
-				U.option_Doppler = !U.option_Doppler;
+				U.flipDoppler();
 			} else if (Start_Toggle_LengthCon.GetHover() == true) {
-				U.option_Length = !U.option_Length;
-				// } else if (Start_Toggle_TimeCon.GetHover() == true) {
-				// U.option_Time = !U.option_Time;
+				U.flipLength();
+//  		} else if (Start_Toggle_TimeCon.GetHover() == true) {
+// 				U.option_Time = !U.option_Time;
 			} else if (Start_Toggle_Toroid.GetHover() == true) {
-				U.option_Torus = !U.option_Torus;
+				U.flipTorus();
 			}
 		} else if (U.currentMode == GameMode.Creative) {
 			if (CreativeShowLight.GetHover() == true) {
@@ -161,9 +161,9 @@ public class ButtonManager {
 			} else if (CreativeShowTrue.GetHover() == true) {
 				U.show_all_locations = !U.show_all_locations;
 			} else if (CreativeAsteroidV_Plus.GetHover() == true) {
-				U.modifyV(0.05f);
+				U.modifyV(0.05f*U.getC());
 			} else if (CreativeAsteroidV_Minus.GetHover() == true) {
-				U.modifyV(-0.05f);
+				U.modifyV(-0.05f*U.getC());
 			} else if (CreativeC_Plus.GetHover() == true) {
 				U.modifyC(0.05f);
 			} else if (CreativeC_Minus.GetHover() == true) {
@@ -186,7 +186,7 @@ public class ButtonManager {
 						toRemove = R;
 						break;
 					}
-				}
+				} 
 				synchronized (U.list_of_rectangles_sync) {
 					U.list_of_rectangles_sync.remove(toRemove);
 				}
@@ -229,10 +229,10 @@ public class ButtonManager {
 		} else if (U.currentMode == GameMode.Title) {
 			StartArcade.Render(_g2);
 			StartCreative.Render(_g2);
-			Start_Toggle_Doppler.SetYesNoValue(U.option_Doppler);
-			Start_Toggle_LengthCon.SetYesNoValue(U.option_Length);
+			Start_Toggle_Doppler.SetYesNoValue(U.getDoppler());
+			Start_Toggle_LengthCon.SetYesNoValue(U.getLength());
 			// Start_Toggle_TimeCon.SetYesNoValue(U.option_Time);
-			Start_Toggle_Toroid.SetYesNoValue(U.option_Torus);
+			Start_Toggle_Toroid.SetYesNoValue(U.getTorus());
 			Start_Toggle_Doppler.Render(_g2);
 			Start_Toggle_LengthCon.Render(_g2);
 			// Start_Toggle_TimeCon.Render(_g2);
