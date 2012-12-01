@@ -1,6 +1,10 @@
 LIGHTSPEED
 ======
 
+![Licence][1]
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 2.0 UK: England & Wales License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/2.0/uk/.
+
 An Asteroids re-make inspired by special relativity. 
 
 In Eclipse add a new Java Applet run configuration for com.timboe.lightspeed.LIGHTSPEED
@@ -14,3 +18,5 @@ Features:
    * Arcade style game mode or sandbox mode.
    * Changeable speed of light
    * Superluminal motion
+   
+  [1]: http://i.creativecommons.org/l/by-sa/2.0/uk/88x31.png
